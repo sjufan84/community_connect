@@ -6,6 +6,8 @@ A decentralized application to facilitate an ecosystem of donors, non-profits, a
 
 ## Technologies
 
+Streamlit
+
 ## Requirements
 Create a `.env` file
 * Specify the address that the Web3 provider will use for the local `Ganache` blockchain.
