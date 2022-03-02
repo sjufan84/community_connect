@@ -30,7 +30,7 @@ def load_contract():
     return contract
 
 
-contract = load_contract
+contract = load_contract()
 
 # Once contract instance is loaded, build the Streamlit components and logic for interacting with the smart contract from the webpage
 # Allow users to give pieces of information.  1-Select an account for the contract owner from a list of accounts.  2-Amount to donate
@@ -41,12 +41,17 @@ donation = st.slider("How much would you like to donate?")
 donor = "0x1A983C577B098b9C203D75cda21C984a365F93DB"
 
 if st.button("Make a Donation"):
-    tx_hash = contract.functions.deposit(10).transact({
-        'to': 0x1A983C577B098b9C203D75cda21C984a365F93DB,
-        'from': 0x1A983C577B098b9C203D75cda21C984a365F93DB,
-        'value': 10
-
+    tx_hash = contract.functions.deposit(donation).transact({
+        'to': '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08',
+        'from': '0x1A983C577B098b9C203D75cda21C984a365F93DB',
+        'value': donation
     })
+    # Display the information on the webpage
+    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    st.write("Transaction receipt mined:")
+    st.write(dict(receipt))
+
+    
     
 
 #st.sidebar.write("Make a Donation")
@@ -57,7 +62,4 @@ if st.button("Make a Donation"):
 #        'from':donor,
 #        'value':donation 
 #    })
-#    # Display the information on the webpage
-#    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-#    st.write("Transaction receipt mined:")
-#    st.write(dict(receipt))
+#    
