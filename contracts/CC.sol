@@ -27,7 +27,7 @@ contract CommunityConnect {
         //contractBalance = address(this).balance;
     }
 
-    function requestFood() public {
+    /*function requestFood() public {
 
     }
     
@@ -39,6 +39,7 @@ contract CommunityConnect {
     function requestGoods() public {
 
     } 
+    */
 
     function sendCash(uint amount, address payable recipient) public {
         require(recipient == authorizedRecipient, "This address is not authorized to receive cash assistance!");
