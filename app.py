@@ -110,3 +110,20 @@ if page == 'Submit Request':
             receipt = w3.eth.waitForTransactionReceipt(tx_hash)
             st.write("Transaction receipt mined:")
             st.write(dict(receipt))
+
+
+# @TODO needs to be integrated with new Streamlit UI format
+amount = st.number_input('Request for Cash Assistance')
+recipient = st.selectbox('Select a Recipient', options=accounts[5:10])  
+ 
+nonProfit = "0x6A11B707EcAE548501Ba9ab92a114C4b98378A08"
+if st.button("Send Cash Assistance"):
+    tx_hash = contract.functions.sendRemittance(int(amount), recipient).transact({
+        #'to': recipient,
+        'from': nonProfit,
+        #'value': amount
+        #'gas': 12000
+    })
+    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    st.write("Transaction receipt mined:")
+    st.write(dict(receipt))
