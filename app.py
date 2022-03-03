@@ -7,10 +7,20 @@ import streamlit as st
 
 load_dotenv()
 
-st.caption("""This is a decentralized application that facilitates an ecosystem of donors, non-profits, and end users in the distribution of aid""")
-st.sidebar.title("Community Connect App")
+
 #  Define and connect a new web3 provider
 w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
+
+
+
+# Once contract instance is loaded, build the Streamlit components and logic for interacting with the smart contract from the webpage
+# Allow users to give pieces of information.  1-Select an account for the contract owner from a list of accounts.  2-Amount to donate
+
+st.set_page_config(
+    layout="wide",
+    page_title = 'This is a decentralized application that facilitates an ecosystem of donors, non-profits, and end users in the distribution of aid',
+    page_icon = 'Resources/CommunityConnect_image.png'
+)
 
 # Cache the contract to tell Streamlit to load this contract only one time, regardless of other changes
 @st.cache(allow_output_mutation=True)
@@ -32,24 +42,75 @@ def load_contract():
 
 contract = load_contract()
 
-# Once contract instance is loaded, build the Streamlit components and logic for interacting with the smart contract from the webpage
-# Allow users to give pieces of information.  1-Select an account for the contract owner from a list of accounts.  2-Amount to donate
 
-accounts = w3.eth.accounts
-address = st.multiselect('Select a Recipient', options=accounts)
-donation = st.slider("How much would you like to donate?")
-donor = "0x1A983C577B098b9C203D75cda21C984a365F93DB"
+#st.header("""This is a decentralized application that facilitates an ecosystem of donors, non-profits, and end users in the distribution of aid""")
+st.sidebar.title("Community Connect App")
+#st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
 
-if st.button("Make a Donation"):
-    tx_hash = contract.functions.deposit(donation).transact({
-        'to': '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08',
-        'from': '0x1A983C577B098b9C203D75cda21C984a365F93DB',
-        'value': donation
-    })
-    # Display the information on the webpage
-    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-    st.write("Transaction receipt mined:")
-    st.write(dict(receipt))
+st.sidebar.title("Select a page")
+page = st.sidebar.radio('', options=['Make a donation', 'Submit Request', 'View open requests', 'Send Remittance'])
+st.sidebar.markdown("""---""")
+
+# Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
+# in different ways
+
+if page == 'Make a donation':
+
+    st.header('Make a donation')
+
+    # Create a streamlit 'form' that will allow for the batch submission to the smart contract
+    # and then clear the data from the inputs
+    
+    with st.form("donation", clear_on_submit=True):
+    
+        accounts = w3.eth.accounts
+        address = st.multiselect('Select a Recipient', options=accounts)
+        donation = st.slider("How much would you like to donate?")
+        donor = "0x1A983C577B098b9C203D75cda21C984a365F93DB"
+
+        submitted = st.form_submit_button("Donate")
+        if submitted:
+            tx_hash = contract.functions.deposit(donation).transact({
+            'to': '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08',
+            'from': '0x1A983C577B098b9C203D75cda21C984a365F93DB',
+            'value': donation
+            })
+            # Display the information on the webpage
+            receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+            st.write("Transaction receipt mined:")
+            st.write(dict(receipt))
+
+
+if page == 'Submit Request':
+    
+    st.header('Submit a request')
+    st.subheader('Please fill out request details below')
+
+    with st.form("submitRequest", clear_on_submit=True):
+        accounts = w3.eth.accounts
+        owner_address = st.selectbox('Select address to submit request from', options = accounts)
+        newName = st.text_input('What is the name of the product?')
+        newProductType = st.selectbox('Select type of assistance requested', options = ['Food', 'Supplies', 'Ride'])
+        
+        # Input quantity of items requested if food or supplies, else ride quantity defaults to 1
+        if newProductType != 'Ride':
+            newProductCount = st.number_input('Enter product quantity requested')
+        else:
+            newProductCount = 1
+
+        submitted = st.form_submit_button("Register Request")
+        if submitted:
+            tx_hash = contract.functions.registerRequest(
+                owner_address,
+                newName,
+                newProductType,
+                int(newProductCount)
+            ).transact({'from' : owner_address})
+            # Display the information on the webpage
+            receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+            st.write("Transaction receipt mined:")
+            st.write(dict(receipt))
+
 
 
 # sendRemittance function and streamlit
