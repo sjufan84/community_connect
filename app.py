@@ -4,6 +4,7 @@ from web3 import Web3
 from pathlib import Path
 from dotenv import load_dotenv
 import streamlit as st
+import pandas as pd
 
 load_dotenv()
 
@@ -48,7 +49,7 @@ st.sidebar.title("Community Connect App")
 #st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
 
 st.sidebar.title("Select a page")
-page = st.sidebar.radio('', options=['Make a donation', 'Submit Request', 'View open requests', 'Send Remittance'])
+page = st.sidebar.radio('', options=['Make a donation', 'Submit Request', 'View open requests', 'Request Cash Assistance', 'Send Remittance', 'Get Balances'])
 st.sidebar.markdown("""---""")
 
 # Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
@@ -111,36 +112,52 @@ if page == 'Submit Request':
             st.write("Transaction receipt mined:")
             st.write(dict(receipt))
 
+if page == 'Request Cash Assistance':
+    st.header('Submit a request for cash assistance')
+    # sendRemittance function and streamlit
+    with st.form("requestCash", clear_on_submit=True):
+        accounts = w3.eth.accounts
+        amount = st.number_input('Request for Cash Assistance')
+        recipient = st.selectbox('Select a Recipient', options=accounts[5:10])  
+        nonProfit = "0x6A11B707EcAE548501Ba9ab92a114C4b98378A08"
+        
+        submitted = st.form_submit_button("Request Cash Assistance")
+        if submitted:
+            tx_hash = contract.functions.sendRemittance(int(amount), recipient).transact({
+                'from': nonProfit,
+            })
+            receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+            st.write("Transaction receipt mined:")
+            st.write(dict(receipt))
+
+if page == 'Get Balances':
+    st.header('Get Balances')
+    # getBalance function and app.py
+
+    with st.form("requestCash", clear_on_submit=True):
+        accountowners = st.selectbox('Select account to Check Balance', options=accounts)
+        submitted = st.form_submit_button("Get Balance")
+        if submitted:
+            tx_hash = w3.eth.get_balance(accountowners)
+            wei = round(tx_hash,2) 
+            eth = w3.fromWei(wei, "ether")
+            st.write(f"This Account has a balance of {eth} Ether.")
 
 
-# sendRemittance function and streamlit
-amount = st.number_input('Request for Cash Assistance')
-recipient = st.selectbox('Select a Recipient', options=accounts[5:10])  
-nonProfit = "0x6A11B707EcAE548501Ba9ab92a114C4b98378A08"
-if st.button("Send Cash Assistance"):
-    tx_hash = contract.functions.sendRemittance(int(amount), recipient).transact({
-        'from': nonProfit,
-    })
-    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-    st.write("Transaction receipt mined:")
-    st.write(dict(receipt))
-
-# getBalance function and app.py
-accountowners = st.selectbox('Select account to Check Balance', options=accounts)
-if st.button("Check Account Balance"):
-    tx_hash = w3.eth.get_balance(accountowners)
-    wei = round(tx_hash,2) 
-    eth = w3.fromWei(wei, "ether")
-    st.write(f"This Account has a balance of {eth} Ether.")
+if page == 'View open requests':
     
-    
+    st.header('Open Requests')
+    #function viewRequest() view public returns(address, string memory, string memory, uint256) {
+    #    return (accountOwner, name, productType, productCount);
+    #}
 
-#st.sidebar.write("Make a Donation")
-#community_connect = '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08'
-#if st.button("Make a Donation"):
-#    tx_hash = contract.functions.deposit(donation).transact({
-#        'to': address,
-#        'from':donor,
-#        'value':donation 
-#    })
-#    
+   
+    request = contract.functions.viewRequest().call()
+    st.markdown(f'**Address of request:**   {request[0]}')
+    st.markdown(f'**Name of item requested:**   {request[1]}')
+    st.markdown(f'**Type of product:**   {request[2]}')
+    st.markdown(f'**Quantity of product:**   {request[3]}')
+
+    st.button('Offer to fill request')
+
+    
