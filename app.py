@@ -7,11 +7,13 @@ import streamlit as st
 import pandas as pd
 import singleton_requests
 
+
 load_dotenv()
 
 
 #  Define and connect a new web3 provider
 w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
+
 
 # Once contract instance is loaded, build the Streamlit components and logic for interacting with the smart contract from the webpage
 # Allow users to give pieces of information.  1-Select an account for the contract owner from a list of accounts.  2-Amount to donate
@@ -64,6 +66,7 @@ if page == 'Make a donation':
     with st.form("donation", clear_on_submit=True):
     
         accounts = w3.eth.accounts
+
         nonprofit = '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08'
         address = st.multiselect('Select a Recipient', [nonprofit])
         donation = st.number_input("How much would you like to donate?")
@@ -97,6 +100,7 @@ if page == 'Make a donation':
 
             # cc_df = pd.DataFrame.from_dict(dict_receipt)
             # st.write(cc_df)
+
 
 if page == 'Submit Request':
     
