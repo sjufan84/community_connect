@@ -112,18 +112,35 @@ if page == 'Submit Request':
             st.write(dict(receipt))
 
 
-# @TODO needs to be integrated with new Streamlit UI format
+
+# sendRemittance function and streamlit
 amount = st.number_input('Request for Cash Assistance')
 recipient = st.selectbox('Select a Recipient', options=accounts[5:10])  
- 
 nonProfit = "0x6A11B707EcAE548501Ba9ab92a114C4b98378A08"
 if st.button("Send Cash Assistance"):
     tx_hash = contract.functions.sendRemittance(int(amount), recipient).transact({
-        #'to': recipient,
         'from': nonProfit,
-        #'value': amount
-        #'gas': 12000
     })
     receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     st.write("Transaction receipt mined:")
     st.write(dict(receipt))
+
+# getBalance function and app.py
+accountowners = st.selectbox('Select account to Check Balance', options=accounts)
+if st.button("Check Account Balance"):
+    tx_hash = w3.eth.get_balance(accountowners)
+    wei = round(tx_hash,2) 
+    eth = w3.fromWei(wei, "ether")
+    st.write(f"This Account has a balance of {eth} Ether.")
+    
+    
+
+#st.sidebar.write("Make a Donation")
+#community_connect = '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08'
+#if st.button("Make a Donation"):
+#    tx_hash = contract.functions.deposit(donation).transact({
+#        'to': address,
+#        'from':donor,
+#        'value':donation 
+#    })
+#    
