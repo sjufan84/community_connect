@@ -51,8 +51,22 @@ if st.button("Make a Donation"):
     st.write("Transaction receipt mined:")
     st.write(dict(receipt))
 
-    
-    
+
+
+amount = st.number_input('Request for Cash Assistance')
+recipient = st.selectbox('Select a Recipient', options=accounts[5:10])  
+ 
+nonProfit = "0x6A11B707EcAE548501Ba9ab92a114C4b98378A08"
+if st.button("Send Cash Assistance"):
+    tx_hash = contract.functions.sendRemittance(int(amount), recipient).transact({
+        #'to': recipient,
+        'from': nonProfit,
+        #'value': amount
+        #'gas': 12000
+    })
+    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    st.write("Transaction receipt mined:")
+    st.write(dict(receipt))
 
 #st.sidebar.write("Make a Donation")
 #community_connect = '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08'
