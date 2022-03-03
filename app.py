@@ -5,13 +5,14 @@ from pathlib import Path
 from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
+import singleton_requests
+
 
 load_dotenv()
 
 
 #  Define and connect a new web3 provider
 w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
-
 
 
 # Once contract instance is loaded, build the Streamlit components and logic for interacting with the smart contract from the webpage
@@ -65,21 +66,40 @@ if page == 'Make a donation':
     with st.form("donation", clear_on_submit=True):
     
         accounts = w3.eth.accounts
-        address = st.multiselect('Select a Recipient', options=accounts)
-        donation = st.slider("How much would you like to donate?")
-        donor = "0x1A983C577B098b9C203D75cda21C984a365F93DB"
+
+        nonprofit = '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08'
+        address = st.multiselect('Select a Recipient', [nonprofit])
+        donation = st.number_input("How much would you like to donate?")
+        donation = int(donation)
+        donor = '0x1A983C577B098b9C203D75cda21C984a365F93DB'
 
         submitted = st.form_submit_button("Donate")
         if submitted:
             tx_hash = contract.functions.deposit(donation).transact({
-            'to': '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08',
-            'from': '0x1A983C577B098b9C203D75cda21C984a365F93DB',
+            'to': nonprofit,
+            'from': donor,
             'value': donation
             })
             # Display the information on the webpage
             receipt = w3.eth.waitForTransactionReceipt(tx_hash)
             st.write("Transaction receipt mined:")
-            st.write(dict(receipt))
+            dict_receipt = dict(receipt)
+            st.write((dict_receipt))
+
+            # calls receipt to add block
+            singleton_requests.add_block(receipt)
+
+            # Access the balance of an account using the address
+            contract_balance = w3.eth.get_balance(nonprofit)
+            # st.write(contract_balance)
+
+            # Access information for the most recent block
+            block_info = w3.eth.get_block("latest")
+            # st.write(dict(block_info))
+
+
+            # cc_df = pd.DataFrame.from_dict(dict_receipt)
+            # st.write(cc_df)
 
 
 if page == 'Submit Request':
