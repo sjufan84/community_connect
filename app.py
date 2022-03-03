@@ -132,16 +132,16 @@ if page == 'Submit Request':
             st.write("Transaction receipt mined:")
             st.write(dict(receipt))
 
-if page == 'Request Cash Assistance':
-    st.header('Submit a request for cash assistance')
+if page == 'Send Remittance':
+    st.header('Send remittance')
     # sendRemittance function and streamlit
-    with st.form("requestCash", clear_on_submit=True):
+    with st.form("sendRemittance", clear_on_submit=True):
         accounts = w3.eth.accounts
-        amount = st.number_input('Request for Cash Assistance')
+        amount = st.number_input('Amount to send')
         recipient = st.selectbox('Select a Recipient', options=accounts[5:10])  
         nonProfit = "0x6A11B707EcAE548501Ba9ab92a114C4b98378A08"
         
-        submitted = st.form_submit_button("Request Cash Assistance")
+        submitted = st.form_submit_button("Send remittance")
         if submitted:
             tx_hash = contract.functions.sendRemittance(int(amount), recipient).transact({
                 'from': nonProfit,
@@ -154,7 +154,8 @@ if page == 'Get Balances':
     st.header('Get Balances')
     # getBalance function and app.py
 
-    with st.form("requestCash", clear_on_submit=True):
+    with st.form("getBalance", clear_on_submit=True):
+        accounts = w3.eth.accounts
         accountowners = st.selectbox('Select account to Check Balance', options=accounts)
         submitted = st.form_submit_button("Get Balance")
         if submitted:
