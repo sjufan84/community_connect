@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 import singleton_requests
-
+import yfinance as yf
 
 load_dotenv()
 
@@ -155,13 +155,17 @@ if page == 'Get Balances':
     # getBalance function and app.py
 
     with st.form("requestCash", clear_on_submit=True):
+        accounts = w3.eth.accounts
         accountowners = st.selectbox('Select account to Check Balance', options=accounts)
         submitted = st.form_submit_button("Get Balance")
         if submitted:
             tx_hash = w3.eth.get_balance(accountowners)
             wei = round(tx_hash,2) 
             eth = w3.fromWei(wei, "ether")
-            st.write(f"This Account has a balance of {eth} Ether.")
+            eth_df = yf.download(tickers="ETH-USD",period="today" )
+            eth_usd = eth_df.iloc[0]["Close"]
+            usd_balance = int(eth_usd)*int(eth)
+            st.write(f"This Account has a balance of {eth} Ether or {usd_balance}$.")
 
 
 if page == 'View open requests':

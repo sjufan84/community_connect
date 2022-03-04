@@ -24,7 +24,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "donation",
 				"type": "uint256"
 			}
 		],
@@ -32,6 +32,15 @@
 		"outputs": [],
 		"payable": true,
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "fillRequest",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -84,6 +93,26 @@
 		"constant": false,
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address payable",
+				"name": "recipient",
+				"type": "address"
+			}
+		],
+		"name": "payInvoice",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
 				"internalType": "address payable",
 				"name": "newAccountOwner",
 				"type": "address"
@@ -114,17 +143,22 @@
 		"constant": false,
 		"inputs": [
 			{
+				"internalType": "address payable",
+				"name": "newSupplier",
+				"type": "address"
+			},
+			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "newAmount",
 				"type": "uint256"
 			},
 			{
-				"internalType": "address payable",
-				"name": "recipient",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "newInvoiceNumber",
+				"type": "uint256"
 			}
 		],
-		"name": "sendCash",
+		"name": "sendInvoice",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -135,12 +169,17 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "value",
 				"type": "uint256"
 			},
 			{
 				"internalType": "address payable",
 				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "sender",
 				"type": "address"
 			}
 		],
@@ -148,6 +187,31 @@
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "viewInvoice",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
