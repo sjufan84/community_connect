@@ -1,7 +1,6 @@
 pragma solidity ^0.5.0;
 
 import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol";
-
 contract CommunityConnect {
     using SafeMath for uint;
     // holds the ETH address of the main customer
@@ -20,6 +19,7 @@ contract CommunityConnect {
     uint256 amount;
     uint256 invoiceNumber;
     bool _isFill = false;
+
 
     mapping(address => uint) balances;
 
@@ -87,4 +87,6 @@ contract CommunityConnect {
 // Supplier agrees to fillRequest
 // Supplier fills out the invoice with sendInvoice
 // Nonprofit can see the suppliers invoice 
+=======
 // Nonprofit sends compensation
+

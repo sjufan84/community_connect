@@ -50,15 +50,15 @@ st.sidebar.title("Community Connect App")
 #st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
 
 st.sidebar.title("Select a page")
-page = st.sidebar.radio('', options=['Make a donation', 'Submit Request', 'View open requests', 'Request Cash Assistance', 'Send Remittance', 'Get Balances'])
+page = st.sidebar.radio('', options=['Make a Donation', 'Submit Request', 'View open requests', 'Request Cash Assistance', 'Send Remittance', 'Get Balances'])
 st.sidebar.markdown("""---""")
 
 # Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
 # in different ways
 
-if page == 'Make a donation':
+if page == 'Make a Donation':
 
-    st.header('Make a donation')
+    st.header('Make a Donation')
 
     # Create a streamlit 'form' that will allow for the batch submission to the smart contract
     # and then clear the data from the inputs
@@ -86,9 +86,6 @@ if page == 'Make a donation':
             dict_receipt = dict(receipt)
             st.write((dict_receipt))
 
-            # calls receipt to add block
-            singleton_requests.add_block(receipt)
-
             # Access the balance of an account using the address
             contract_balance = w3.eth.get_balance(nonprofit)
             # st.write(contract_balance)
@@ -97,9 +94,13 @@ if page == 'Make a donation':
             block_info = w3.eth.get_block("latest")
             # st.write(dict(block_info))
 
+            # calls receipt to add block
+            singleton_requests.add_block(receipt, contract_balance, block_info)
 
-            # cc_df = pd.DataFrame.from_dict(dict_receipt)
-            # st.write(cc_df)
+            block_chain = singleton_requests.get_receipts()
+            st.write(block_chain)
+            block_chain_df = pd.DataFrame.from_dict(block_chain)
+            st.write(block_chain_df)
 
 
 if page == 'Submit Request':
