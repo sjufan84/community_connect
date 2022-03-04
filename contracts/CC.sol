@@ -1,4 +1,5 @@
 pragma solidity ^0.5.0;
+
 import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol";
 contract CommunityConnect {
     using SafeMath for uint;
@@ -18,7 +19,10 @@ contract CommunityConnect {
     uint256 amount;
     uint256 invoiceNumber;
     bool _isFill = false;
+
+
     mapping(address => uint) balances;
+
     // adds ETH to smart contract.  include `payable` modifer so contract accepts ETH that gets sent to this function
     // Donors can send Eth to contract
     function deposit(uint256 donation) public payable {
@@ -83,4 +87,6 @@ contract CommunityConnect {
 // Supplier agrees to fillRequest
 // Supplier fills out the invoice with sendInvoice
 // Nonprofit can see the suppliers invoice 
+=======
 // Nonprofit sends compensation
+
