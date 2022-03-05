@@ -51,8 +51,13 @@ contract CommunityConnect {
         return (accountOwner, name, productType, productCount);
     }
     // This function is a check for Suppliers to call when they agree to fill the request
-    function fillRequest() public {
+    function fillRequest(address payable newSupplier, uint256 newAmount, uint256 newInvoiceNumber) public returns(address, uint256, uint256) {
         _isFill = true;
+        supplier = newSupplier;
+        amount = newAmount;
+        invoiceNumber = newInvoiceNumber;
+
+        return(supplier, amount, invoiceNumber);
     }
     // This function allows the Nonprofit to send cash assistance to users, I think we should change this to the contract sends cash to users
     function sendRemittance(uint value, address payable recipient, address sender) public {
@@ -60,14 +65,14 @@ contract CommunityConnect {
     recipient.transfer(value);
     contractBalance = address(this).balance;
     }
-    // This function allows the Suppliers to send an invoice to contract
+    /* This function allows the Suppliers to send an invoice to contract
      function sendInvoice(address payable newSupplier, uint256 newAmount, uint256 newInvoiceNumber) public {
         require(_isFill == true);
         supplier = newSupplier;
         amount = newAmount;
         invoiceNumber = newInvoiceNumber;
         
-    }
+    }*/
     // This function allows the Nonprofit to see the invoice Suppliers have sent
     function viewInvoice() view public returns(address, uint256, uint256) {
         return (supplier, amount, invoiceNumber);
@@ -87,6 +92,5 @@ contract CommunityConnect {
 // Supplier agrees to fillRequest
 // Supplier fills out the invoice with sendInvoice
 // Nonprofit can see the suppliers invoice 
-=======
 // Nonprofit sends compensation
 
