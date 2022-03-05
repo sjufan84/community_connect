@@ -1,6 +1,7 @@
 pragma solidity ^0.5.0;
 
 import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol";
+
 contract CommunityConnect {
     using SafeMath for uint;
     // holds the ETH address of the main customer
@@ -18,8 +19,8 @@ contract CommunityConnect {
     uint256 productCount;
     uint256 amount;
     uint256 invoiceNumber;
-    bool _isFill = false;
-
+    bool isFill = false;
+    bool isReceived = false;
 
     mapping(address => uint) balances;
 
@@ -35,10 +36,12 @@ contract CommunityConnect {
         //return balances[recipient];
         return address(recipient).balance;
     }
+    
     // This function allows view of info
     function getInfo() view public returns(address, address payable, uint) {
         return (nonProfit, authorizedRecipient, contractBalance);
     }
+    
     // This function allows Users to make requests to the contract
     function registerRequest(address payable newAccountOwner, string memory newName, string memory newProductType, uint256 newProductCount) public {
         accountOwner = newAccountOwner;
@@ -46,9 +49,24 @@ contract CommunityConnect {
         productType = newProductType;
         productCount = newProductCount;
     }
+    
     // This function allows Suppliers to see the requests made by Users
     function viewRequest() view public returns(address, string memory, string memory, uint256) {
         return (accountOwner, name, productType, productCount);
+    }
+
+    
+    // This function allows the supplier to agree to fill the order and send an amount to be paid for goods rendered
+    function fillInvoice(address, uint256, bool ) public {
+        require(isFill=true && msg.sender == supplier);
+    }
+
+    //function fillRequest() public {
+    //    isFill=true;
+    //}
+
+    function getFillStatus() view public returns(bool) {
+        return isFill;
     }
     // This function is a check for Suppliers to call when they agree to fill the request
     function fillRequest(address payable newSupplier, uint256 newAmount, uint256 newInvoiceNumber) public returns(address, uint256, uint256) {
@@ -59,12 +77,16 @@ contract CommunityConnect {
 
         return(supplier, amount, invoiceNumber);
     }
+    
     // This function allows the Nonprofit to send cash assistance to users, I think we should change this to the contract sends cash to users
     function sendRemittance(uint value, address payable recipient, address sender) public {
-    require(sender == nonProfit && recipient == authorizedRecipient, "The recipient address is not authorized!");
-    recipient.transfer(value);
-    contractBalance = address(this).balance;
+        require(sender == nonProfit && recipient == authorizedRecipient, "The recipient address is not authorized!");
+        recipient.transfer(value);
+        contractBalance = address(this).balance;
     }
+
+    
+
     /* This function allows the Suppliers to send an invoice to contract
      function sendInvoice(address payable newSupplier, uint256 newAmount, uint256 newInvoiceNumber) public {
         require(_isFill == true);
@@ -73,24 +95,37 @@ contract CommunityConnect {
         invoiceNumber = newInvoiceNumber;
         
     }*/
+
     // This function allows the Nonprofit to see the invoice Suppliers have sent
-    function viewInvoice() view public returns(address, uint256, uint256) {
-        return (supplier, amount, invoiceNumber);
+    function viewInvoice() view public returns(address, uint256, bool) {
+        return (supplier, amount, isFill);
     }
+    
     // This function allows the Nonprofit to pay the Supplier, I think we should change this to the Nonprofit sends the money but it comes from contract 
-    function payInvoice(uint value, address payable recipient) public payable{
-        require(recipient == supplier, "This address is not authorized to receive cash assistance!");
-        nonProfit.transfer(value);
+    function payInvoice(uint256 _amount, address payable recipient, bool) public payable{
+        require(recipient == supplier, "This address is not authorized to receive compensation!");
+        require(isFill=true);
+        require(isReceived = true);
+        require(amount==_amount);
+        supplier.transfer(_amount);
         
+    }
+    
+    function userReceived() public {
+        isReceived=true;
+    }
+    function getReceivedStatus() view public returns(bool) {
+        return isReceived;
     }
     
     // accepts ETH even if it gets sent without using the `deposit` function
     function() external payable {}
 }
+// Flow of Operations
 // User enters there request with registerRequest
-// Supplier can see there request
-// Supplier agrees to fillRequest
-// Supplier fills out the invoice with sendInvoice
-// Nonprofit can see the suppliers invoice 
-// Nonprofit sends compensation
 
+// Supplier can see there request with viewRequest call
+// Supplier agrees to fill Request with fillRequest(bool), then enters inputs to sendInvoice function
+// Nonprofit can view the invoice with viewInvoice call
+// Nonprofit can see the suppliers invoice, check to see if the amount in invoice == amount in viewRequest, check to see if user received the goods with getReceivedStatus
+// Nonprofit sends compensation that equals the amount in invoice
