@@ -49,8 +49,8 @@ contract = load_contract()
 st.sidebar.title("Community Connect App")
 #st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
 
-st.sidebar.title("Select a page")
-page = st.sidebar.radio('', options=['Make a Donation', 'Submit Request', 'View open requests', 'Request Cash Assistance', 'Send Remittance', 'Get Balances'])
+st.sidebar.title("Select a Page")
+page = st.sidebar.radio('', options=['Make a Donation', 'Submit Request', 'View Open Requests', 'Request Cash Assistance', 'Send Remittance', 'Get Balances'])
 st.sidebar.markdown("""---""")
 
 # Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
@@ -82,9 +82,9 @@ if page == 'Make a Donation':
             })
             # Display the information on the webpage
             receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-            st.write("Transaction receipt mined:")
+            # st.write("Transaction receipt mined:")
             dict_receipt = dict(receipt)
-            st.write((dict_receipt))
+            # st.write((dict_receipt))
 
             # Access the balance of an account using the address
             contract_balance = w3.eth.get_balance(nonprofit)
@@ -98,14 +98,18 @@ if page == 'Make a Donation':
             singleton_requests.add_block(receipt, contract_balance, block_info)
 
             block_chain = singleton_requests.get_receipts()
-            st.write(block_chain)
+            # st.write(block_chain)
             block_chain_df = pd.DataFrame.from_dict(block_chain)
+
+            columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
+            block_chain_df.columns = columns
+
             st.write(block_chain_df)
 
 
-if page == 'Submit Request':
+if page == 'Submit a Request':
     
-    st.header('Submit a request')
+    st.header('Submit a Request')
     st.subheader('Please fill out request details below')
 
     with st.form("submitRequest", clear_on_submit=True):
@@ -165,7 +169,7 @@ if page == 'Get Balances':
             st.write(f"This Account has a balance of {eth} Ether.")
 
 
-if page == 'View open requests':
+if page == 'View Open Requests':
     
     st.header('Open Requests')
     #function viewRequest() view public returns(address, string memory, string memory, uint256) {
