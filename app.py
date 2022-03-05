@@ -50,7 +50,7 @@ st.sidebar.title("Community Connect App")
 #st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
 
 st.sidebar.title("Select a Page")
-page = st.sidebar.radio('', options=['Make a Donation', 'Submit Request', 'View Open Requests', 'Request Cash Assistance', 'Send Remittance', 'Get Balances'])
+page = st.sidebar.radio('', options=['Make a Donation', 'Submit Request', 'View Open Requests', 'Request for Cash Assistance', 'Send Remittance', 'Get Balances'])
 st.sidebar.markdown("""---""")
 
 # Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
@@ -137,23 +137,47 @@ if page == 'Submit a Request':
             st.write("Transaction receipt mined:")
             st.write(dict(receipt))
 
-if page == 'Request Cash Assistance':
-    st.header('Submit a request for cash assistance')
+if page == 'Request for Cash Assistance':
+    st.header('Request for Cash Assistance')
     # sendRemittance function and streamlit
     with st.form("requestCash", clear_on_submit=True):
         accounts = w3.eth.accounts
-        amount = st.number_input('Request for Cash Assistance')
-        recipient = st.selectbox('Select a Recipient', options=accounts[5:10])  
-        nonProfit = "0x6A11B707EcAE548501Ba9ab92a114C4b98378A08"
-        
-        submitted = st.form_submit_button("Request Cash Assistance")
+        recipient = st.selectbox('Provide Your Public Address', options=accounts[5:10])  # Currently only first hash listed is the only authorizedRecipient in our smart contract
+        amount = st.number_input('Provide Amount Needed')
+        amount = int(amount)
+        nonprofit = "0x6A11B707EcAE548501Ba9ab92a114C4b98378A08"
+        address = st.multiselect('Your request will be fulfilled by:', [nonprofit])
+
+        submitted = st.form_submit_button("Request for Cash Assistance")
         if submitted:
-            tx_hash = contract.functions.sendRemittance(int(amount), recipient).transact({
-                'from': nonProfit,
+            tx_hash = contract.functions.sendRemittance(amount, recipient, nonprofit).transact({
+                'from': nonprofit,
             })
+            # Display the information on the webpage
             receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-            st.write("Transaction receipt mined:")
-            st.write(dict(receipt))
+            # st.write("Transaction receipt mined:")
+            dict_receipt = dict(receipt)
+            # st.write((dict_receipt))
+
+            # Access the balance of an account using the address
+            contract_balance = w3.eth.get_balance(nonprofit)
+            # st.write(contract_balance)
+
+            # Access information for the most recent block
+            block_info = w3.eth.get_block("latest")
+            # st.write(dict(block_info))
+
+            # calls receipt to add block
+            singleton_requests.add_block(receipt, contract_balance, block_info)
+
+            block_chain = singleton_requests.get_receipts()
+            # st.write(block_chain)
+            block_chain_df = pd.DataFrame.from_dict(block_chain)
+
+            columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
+            block_chain_df.columns = columns
+
+            st.write(block_chain_df)
 
 if page == 'Get Balances':
     st.header('Get Balances')
