@@ -54,32 +54,47 @@ contract CommunityConnect {
     function viewRequest() view public returns(address, string memory, string memory, uint256) {
         return (accountOwner, name, productType, productCount);
     }
+
     
     // This function allows the supplier to agree to fill the order and send an amount to be paid for goods rendered
     function fillInvoice(address, uint256, bool ) public {
         require(isFill=true && msg.sender == supplier);
     }
 
-    function fillRequest() public {
-        isFill=true;
-    }
+    //function fillRequest() public {
+    //    isFill=true;
+    //}
 
     function getFillStatus() view public returns(bool) {
         return isFill;
     }
+    // This function is a check for Suppliers to call when they agree to fill the request
+    function fillRequest(address payable newSupplier, uint256 newAmount, uint256 newInvoiceNumber) public returns(address, uint256, uint256) {
+        _isFill = true;
+        supplier = newSupplier;
+        amount = newAmount;
+        invoiceNumber = newInvoiceNumber;
+
+        return(supplier, amount, invoiceNumber);
+    }
     
     // This function allows the Nonprofit to send cash assistance to users, I think we should change this to the contract sends cash to users
     function sendRemittance(uint value, address payable recipient, address sender) public {
-    require(sender == nonProfit && recipient == authorizedRecipient, "The recipient address is not authorized!");
-    recipient.transfer(value);
-    contractBalance = address(this).balance;
+        require(sender == nonProfit && recipient == authorizedRecipient, "The recipient address is not authorized!");
+        recipient.transfer(value);
+        contractBalance = address(this).balance;
     }
+
     
-    // This function allows the Suppliers to send an invoice to contract
-     function sendInvoice(address, uint256 _amount, bool) public {
-        require(isFill == true);
-        amount=_amount;
-    }
+
+    /* This function allows the Suppliers to send an invoice to contract
+     function sendInvoice(address payable newSupplier, uint256 newAmount, uint256 newInvoiceNumber) public {
+        require(_isFill == true);
+        supplier = newSupplier;
+        amount = newAmount;
+        invoiceNumber = newInvoiceNumber;
+        
+    }*/
 
     // This function allows the Nonprofit to see the invoice Suppliers have sent
     function viewInvoice() view public returns(address, uint256, bool) {
@@ -108,6 +123,7 @@ contract CommunityConnect {
 }
 // Flow of Operations
 // User enters there request with registerRequest
+
 // Supplier can see there request with viewRequest call
 // Supplier agrees to fill Request with fillRequest(bool), then enters inputs to sendInvoice function
 // Nonprofit can view the invoice with viewInvoice call
