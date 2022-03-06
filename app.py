@@ -233,55 +233,9 @@ if page == 'View Open Request':
                 
             st.subheader("Offer with Community Connect for Approval")
 
-            nonprofit_nonce = w3.eth.get_transaction_count(nonprofit, 'latest')
-            nonprofit_key = st.text_input("To confirm approval, please provide your private key")
-            nonprofit_key = os.getenv("NONPROFIT_PRIVATE_KEY")
-            submit = st.form_submit_button("Approve Offer")
-            if submit:
-                nonprofit_approved = contract.functions.approveFillOffer().buildTransaction({
-                    'from': nonprofit,
-                    'nonce': nonprofit_nonce
-                })
-                signed_nonprofit_approval_tx = w3.eth.account.signTransaction(nonprofit_approved, nonprofit_key)
-                tx_hash_nonprofit_approval = w3.eth.sendRawTransaction(signed_nonprofit_approval_tx.rawTransaction)
-
-                st.write(w3.toHex(tx_hash_nonprofit_approval))
-
-
-                # Display the information on the webpage
-                receipt = w3.eth.waitForTransactionReceipt(nonprofit_approved)
-                # st.write("Transaction receipt mined:")
-                dict_receipt = dict(receipt)
-                st.write((dict_receipt))
-                contract_address = dict_receipt["to"]
-
-                # Access the balance of an account using the address
-                contract_balance = w3.eth.get_balance(contract_address)
-                # st.write(contract_balance)
-
-                # Access information for the most recent block
-                block_info = w3.eth.get_block("latest")
-                # st.write(dict(block_info))
-
-                # calls receipt to add block
-                singleton_requests.add_block(receipt, contract_balance, block_info)
-
-                block_chain = singleton_requests.get_receipts()
-                # st.write(block_chain)
-                block_chain_df = pd.DataFrame.from_dict(block_chain)
-
-                columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
-                block_chain_df.columns = columns
-
-                st.write(block_chain_df)
-                st.write("This request has been fulfilled")
-        
-    #invoice_number = st.number_input('Invoice Number')
-
-
 if page == 'Request for Cash Assistance':
     st.header('Request for Cash Assistance')
-    # sendRemittance function and streamlit
+
     with st.form("cash request", clear_on_submit=True):
 
         recipient = st.selectbox('Provide Your Public Address', options=accounts[5:10])  # Currently only first hash listed is the only authorizedRecipient in our smart contract
@@ -291,7 +245,7 @@ if page == 'Request for Cash Assistance':
 
         submitted = st.form_submit_button("Request for Cash Assistance")
         if submitted:
-            tx_hash = contract.functions.sendRemittance(int_amount, recipient, nonprofit).transact({
+            tx_hash = contract.functions.requestCash(int_amount, recipient, nonprofit).transact({
                 'from': nonprofit,
             })
             # Display the information on the webpage
@@ -319,6 +273,38 @@ if page == 'Request for Cash Assistance':
             block_chain_df.columns = columns
 
             st.write(block_chain_df)
+
+            st.subheader("Request with Community Connect for Approval")
+            submit = st.form_submit_button("Approve Request")
+            if submit:
+                nonprofit_approved = contract.functions.sendCash(int_amount, recipient, nonprofit).transact({
+                'from': nonprofit,
+                })
+                # Display the information on the webpage
+                receipt = w3.eth.waitForTransactionReceipt(nonprofit_approved)
+                # st.write("Transaction receipt mined:")
+                dict_receipt = dict(receipt)
+                contract_address = dict_receipt["to"]
+
+                # Access the balance of an account using the address
+                contract_balance = w3.eth.get_balance(contract_address)
+                # st.write(contract_balance)
+
+                # Access information for the most recent block
+                block_info = w3.eth.get_block("latest")
+                # st.write(dict(block_info))
+
+                # calls receipt to add block
+                singleton_requests.add_block(receipt, contract_balance, block_info)
+
+                block_chain = singleton_requests.get_receipts()
+                # st.write(block_chain)
+                block_chain_df = pd.DataFrame.from_dict(block_chain)
+
+                columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
+                block_chain_df.columns = columns
+
+                st.write(block_chain_df)
 
 if page == 'Get Balances':
     st.header('Get Balances')
