@@ -6,9 +6,10 @@ from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 import singleton_requests
-# import yfinance as yf
+#import ipfs
+import yfinance as yf
 
-from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
+#from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
 
 load_dotenv()
 
@@ -63,6 +64,7 @@ st.sidebar.markdown("""---""")
 # Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
 # in different ways
 block_chain_df = pd.DataFrame()
+
 if page == 'Make a Donation':
 
     st.header('Make a Donation')
@@ -110,19 +112,17 @@ if page == 'Make a Donation':
             columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
             block_chain_df.columns = columns
 
-            block_json_df = convert_df_to_json(block_chain_df)
-            ipfs_hash = pin_json_to_ipfs(block_json_df)
-            returned_block_df = retrieve_block_df(ipfs_hash)
+           # block_json_df = convert_df_to_json(block_chain_df)
+           # ipfs_hash = pin_json_to_ipfs(block_json_df)
+           # returned_block_df = retrieve_block_df(ipfs_hash)
 
             st.write(block_chain_df)
             st.balloons()
-            st.write(block_json_df, ipfs_hash, returned_block_df)
+           # st.write(block_json_df, ipfs_hash, returned_block_df)
 
 
 #ipfs_hash = pin_json_to_ipfs(block_json_df)
 #block_df = retrieve_block_df(ipfs_hash)
-    
-
 
 if page == 'Submit a Request':
     
@@ -246,13 +246,20 @@ if page == 'View Open Request':
                 
             st.subheader("Offer with Community Connect for Approval")
 
+            nonprofit_nonce = w3.eth.get_transaction_count(nonprofit, 'latest')
+            nonprofit_key = st.text_input("To confirm approval, please provide your private key")
+            nonprofit_key = os.getenv("NONPROFIT_PRIVATE_KEY")
             submit = st.form_submit_button("Approve Offer")
             if submit:
-                nonprofit_approved = contract.functions.approveFillOffer().transact({
-                    'to': supplier_address,
+                nonprofit_approved = contract.functions.approveFillOffer().buildTransaction({
                     'from': nonprofit,
-                    'value': 10
+                    'nonce': nonprofit_nonce
                 })
+                signed_nonprofit_approval_tx = w3.eth.account.signTransaction(nonprofit_approved, nonprofit_key)
+                tx_hash_nonprofit_approval = w3.eth.sendRawTransaction(signed_nonprofit_approval_tx.rawTransaction)
+
+                st.write(w3.toHex(tx_hash_nonprofit_approval))
+
 
                 # Display the information on the webpage
                 receipt = w3.eth.waitForTransactionReceipt(nonprofit_approved)
@@ -279,6 +286,7 @@ if page == 'View Open Request':
                 block_chain_df.columns = columns
 
                 st.write(block_chain_df)
+                st.write("This request has been fulfilled")
         
     #invoice_number = st.number_input('Invoice Number')
 
@@ -338,4 +346,4 @@ if page == 'Get Balances':
             eth_df = yf.download(tickers="ETH-USD",period="today" )
             eth_usd = eth_df.iloc[0]["Close"]
             usd_balance = int(eth_usd)*int(eth)
-            st.write(f"This Account has a balance of {eth} Ether or {usd_balance}$.")
+            st.write(f"This Account has a balance of {eth} ETHER or ${usd_balance:,.2f} USD.")
