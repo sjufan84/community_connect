@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 import singleton_requests
-import yfinance as yf
+# import yfinance as yf
 
 load_dotenv()
 
@@ -44,13 +44,18 @@ def load_contract():
 
 contract = load_contract()
 
+# list of accounts
+accounts = w3.eth.accounts
+nonprofit = accounts[3]
+supplier_address = accounts[4]
+supplier_key = os.getenv("SUPPLIER_PRIVATE_KEY")
 
 #st.header("""This is a decentralized application that facilitates an ecosystem of donors, non-profits, and end users in the distribution of aid""")
 st.sidebar.title("Community Connect App")
 #st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
 
-st.sidebar.title("Select a Page")
-page = st.sidebar.radio('', options=['Make a Donation', 'Submit Request', 'View Open Requests', 'Request for Cash Assistance', 'Send Remittance', 'Get Balances'])
+st.sidebar.subheader("How Can We Help?")
+page = st.sidebar.radio('', options=['Make a Donation', 'Submit Request', 'View Open Requests', 'Request for Cash Assistance', 'Get Balances'])
 st.sidebar.markdown("""---""")
 
 # Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
@@ -66,12 +71,11 @@ if page == 'Make a Donation':
     with st.form("donation", clear_on_submit=True):
     
         accounts = w3.eth.accounts
-
-        nonprofit = '0x6A11B707EcAE548501Ba9ab92a114C4b98378A08'
+      
         address = st.multiselect('Select a Recipient', [nonprofit])
         donation = st.number_input("How much would you like to donate?")
         donation = int(donation)
-        donor = '0x1A983C577B098b9C203D75cda21C984a365F93DB'
+        donor = accounts[0]
 
         submitted = st.form_submit_button("Donate")
         if submitted:
@@ -105,6 +109,7 @@ if page == 'Make a Donation':
             block_chain_df.columns = columns
 
             st.write(block_chain_df)
+            st.balloons()
 
 
 if page == 'Submit a Request':
@@ -141,11 +146,10 @@ if page == 'Request for Cash Assistance':
     st.header('Request for Cash Assistance')
     # sendRemittance function and streamlit
     with st.form("requestCash", clear_on_submit=True):
-        accounts = w3.eth.accounts
+
         recipient = st.selectbox('Provide Your Public Address', options=accounts[5:10])  # Currently only first hash listed is the only authorizedRecipient in our smart contract
         amount = st.number_input('Provide Amount Needed')
         amount = int(amount)
-        nonprofit = "0x6A11B707EcAE548501Ba9ab92a114C4b98378A08"
         address = st.multiselect('Your request will be fulfilled by:', [nonprofit])
 
         submitted = st.form_submit_button("Request for Cash Assistance")
@@ -184,7 +188,6 @@ if page == 'Get Balances':
     # getBalance function and app.py
 
     with st.form("requestCash", clear_on_submit=True):
-        accounts = w3.eth.accounts
         accountowners = st.selectbox('Select account to Check Balance', options=accounts)
         submitted = st.form_submit_button("Get Balance")
         if submitted:
@@ -205,14 +208,11 @@ if page == 'View Open Requests':
     #}
 
     request = contract.functions.viewRequest().call()
-    st.markdown(f'**Address of request:**   {request[0]}')
-    st.markdown(f'**Name of item requested:**   {request[1]}')
-    st.markdown(f'**Type of product:**   {request[2]}')
-    st.markdown(f'**Quantity of product:**   {request[3]}')
+    st.markdown(f'**Address of Requestor**   {request[0]}')
+    st.markdown(f'**Name of Item Requested:**   {request[1]}')
+    st.markdown(f'**Type of Product:**   {request[2]}')
+    st.markdown(f'**Quantity of Product:**   {request[3]}')
 
-    
-    
-        #supplier_private_key = '4deb3c6a476ac1f674b83d5ec1834122d7cceaae3395ddaf5f193f8bc585cd8e'
         #nonce = w3.eth.get_transaction_count(supplier_address, 'latest' )
         #payload={'from': supplier_address, 'nonce': nonce}
         
@@ -227,26 +227,23 @@ if page == 'View Open Requests':
         
     with st.form('fillRequest', clear_on_submit=True):    
         accounts = w3.eth.accounts
-        supplier_address = '0x2c8e3e5EC4064612d4936970dc27e2d930f78245'
         st.subheader('If you would like to fill this request, please fill out the form below:')    
-        supplier= st.selectbox(f'Supplier Address', options=accounts[4:5])
+        supplier= st.selectbox(f'Supplier Address', [supplier_address])
         amount = st.number_input('Compensation requested')
         invoiceNumber = st.number_input('Invoice Number')
         st.header('Send Invoice')
         #supplier = st.text_input('Name')
         #type = st.text_input('Type')
-        supplier_private_key = '4deb3c6a476ac1f674b83d5ec1834122d7cceaae3395ddaf5f193f8bc585cd8e'
-        nonce = w3.eth.get_transaction_count(supplier, 'latest' )
+        nonce = w3.eth.get_transaction_count(supplier, 'latest')
         payload={'from': supplier, 'nonce': nonce, "gasPrice": w3.eth.gas_price}
-        submit = st.form_submit_button("Send Invoice")
-        if submit:
-        #supplier = '0x2c8e3e5EC4064612d4936970dc27e2d930f78245'
+        submitted = st.form_submit_button("Send Invoice")
+        if submitted:
             approve_tx = contract.functions.fillRequest(
                 supplier,
                 int(amount),
                 int(invoiceNumber)
             ).buildTransaction(payload)
-            sign_tx = w3.eth.account.signTransaction(approve_tx, supplier_private_key)
+            sign_tx = w3.eth.account.signTransaction(approve_tx, supplier_key)
             tx_hash_1 = w3.eth.sendRawTransaction(sign_tx.rawTransaction)
             
             # Display the information on the webpage
@@ -263,15 +260,12 @@ if page == 'View Open Requests':
 
     fill = st.button('Offer to fill request')
     if fill:
-        accounts = w3.eth.accounts
-        supplier_address = '0x2c8e3e5EC4064612d4936970dc27e2d930f78245'
-        supplier_private_key = '4deb3c6a476ac1f674b83d5ec1834122d7cceaae3395ddaf5f193f8bc585cd8e'
-        nonce = w3.eth.get_transaction_count(supplier_address, 'latest' )
+        nonce = w3.eth.get_transaction_count(supplier_address, 'latest')
         payload={'from': supplier_address, 'nonce': nonce}
         
         #create another input asking for compensation requested
-        raw_fill_txn = contract.functions.fillRequest().buildTransaction(payload)
-        signed_txn = w3.eth.account.signTransaction(raw_fill_txn, private_key=supplier_private_key)
+        raw_fill_txn = contract.functions.fillRequest(supplier_address, 10, 10).buildTransaction(payload)
+        signed_txn = w3.eth.account.signTransaction(raw_fill_txn, private_key=supplier_key)
         fill_tx = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
         #tx_hash= contract.functions.fillRequest().call()
         receipt = w3.eth.waitForTransactionReceipt(fill_tx)
@@ -279,9 +273,9 @@ if page == 'View Open Requests':
         st.write(dict(receipt))
         
             
-        st.subheader('Please fill out request for Compensation')
+        st.subheader('Please Fill Out Request for Compensation')
         with st.form("sendInvoice"):
-            supplier= st.selectbox(f'Supplier Address', options=accounts[4:5])
+            supplier= st.selectbox(f'Supplier Address', [supplier_address])
             #supplier = st.text_input('Name')
             #type = st.text_input('Type')
             amount = st.number_input('Quantity')
@@ -290,9 +284,7 @@ if page == 'View Open Requests':
             submit= st.form_submit_button("Send Invoice")
            
             if submit:
-                accounts = w3.eth.accounts
-                #supplier_address = '0x2c8e3e5EC4064612d4936970dc27e2d930f78245'
-                supplier_private_key = '4deb3c6a476ac1f674b83d5ec1834122d7cceaae3395ddaf5f193f8bc585cd8e'
+                accounts = w3.eth.accounts     
                 nonce = w3.eth.get_transaction_count(supplier, 'latest' )
                 payload={'from': supplier, 'nonce': nonce}
                 
@@ -303,7 +295,7 @@ if page == 'View Open Requests':
                     
                     
                 ).buildTransaction(payload)
-                sign_tx = w3.eth.account.signTransaction(approve_tx, private_key=supplier_private_key)
+                sign_tx = w3.eth.account.signTransaction(approve_tx, private_key=supplier_key)
                 tx_hash_1 = w3.eth.sendRawTransaction(sign_tx.rawTransaction)
                 # Display the information on the webpage
                 receipt = w3.eth.waitForTransactionReceipt(tx_hash_1)
