@@ -351,4 +351,4 @@ if page == 'Get Balances':
             usd_balance = int(eth_usd)*int(eth)
             st.write(f"This account has a balance of **{tx_hash:,.2f} WEI:**")
             st.write(f"**{eth:,.2f} ETHER** or **${usd_balance:,.2f} USD**.")
-            
+             
