@@ -16,6 +16,7 @@ def convert_receipt(receipt, contract_balance, block_info):
 
     # do timestamp conversion from line 7
     new_dict["timestamp"] = datetime.datetime.utcfromtimestamp(new_dict["timestamp"])
+    new_dict["transactionHash"] = new_dict["transactionHash"].hex()
 
     return new_dict
 

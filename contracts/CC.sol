@@ -173,7 +173,7 @@ contract CommunityConnect {
         cashRequestStatus = "complete";
     }
     
-    // This function allows the Nonprofit to send cash assistance to users, I think we should change this to the contract sends cash to users
+    // This function allows the nonprofit to send cash assistance to users
     function sendRemittance(uint value, address payable recipient, address sender) public {
         require(sender == nonProfit && recipient == authorizedRecipient, "The recipient address is not authorized!");
         recipient.transfer(value);
