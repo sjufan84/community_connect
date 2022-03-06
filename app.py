@@ -12,6 +12,8 @@ import yfinance as yf
 
 #from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
 
+from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
+
 load_dotenv()
 
 
@@ -113,14 +115,13 @@ if page == 'Make a Donation':
             columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
             block_chain_df.columns = columns
 
-           # block_json_df = convert_df_to_json(block_chain_df)
-           # ipfs_hash = pin_json_to_ipfs(block_json_df)
-           # returned_block_df = retrieve_block_df(ipfs_hash)
+            block_json_df = convert_df_to_json(block_chain_df)
+            ipfs_hash = pin_json_to_ipfs(block_json_df)
+            returned_block_df = retrieve_block_df(ipfs_hash)
 
             st.write(block_chain_df)
             st.balloons()
-           # st.write(block_json_df, ipfs_hash, returned_block_df)
-
+            st.write(block_json_df, ipfs_hash, returned_block_df)
 
 #ipfs_hash = pin_json_to_ipfs(block_json_df)
 #block_df = retrieve_block_df(ipfs_hash)
