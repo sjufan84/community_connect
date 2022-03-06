@@ -177,21 +177,6 @@ if page == 'Submit a Request':
 if page == 'View Open Request':
     
     st.header('Open Requests')
-    #function viewRequest() view public returns(address, string memory, string memory, uint256) {
-    #    return (accountOwner, name, productType, productCount);
-    #}
-
-        #nonce = w3.eth.get_transaction_count(supplier_address, 'latest' )
-        #payload={'from': supplier_address, 'nonce': nonce}
-        
-        #create another input asking for compensation requested
-        #raw_fill_txn = contract.functions.fillRequest().buildTransaction(payload)
-        #signed_txn = w3.eth.account.signTransaction(raw_fill_txn, private_key=supplier_private_key)
-        #fill_tx = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-        #tx_hash= contract.functions.fillRequest().call()
-        #receipt = w3.eth.waitForTransactionReceipt(fill_tx)
-        #st.write("Transaction receipt mined:")
-        #st.write(dict(receipt))
         
     with st.form('fillRequest', clear_on_submit=True):    
 
