@@ -1,5 +1,6 @@
 import os
 import json
+from tkinter import N
 from web3 import Web3
 from pathlib import Path
 from dotenv import load_dotenv
@@ -298,12 +299,12 @@ if page == 'Request for Cash Assistance':
 
         recipient = st.selectbox('Provide Your Public Address', options=accounts[5:10])  # Currently only first hash listed is the only authorizedRecipient in our smart contract
         amount = st.number_input('Provide Amount Needed')
-        amount = int(amount)
+        int_amount = int(amount)
         address = st.multiselect('Your request will be fulfilled by:', [nonprofit])
 
         submitted = st.form_submit_button("Request for Cash Assistance")
         if submitted:
-            tx_hash = contract.functions.sendRemittance(amount, recipient, nonprofit).transact({
+            tx_hash = contract.functions.sendRemittance(int_amount, recipient, nonprofit).transact({
                 'from': nonprofit,
             })
             # Display the information on the webpage
@@ -346,4 +347,5 @@ if page == 'Get Balances':
             eth_df = yf.download(tickers="ETH-USD",period="today" )
             eth_usd = eth_df.iloc[0]["Close"]
             usd_balance = int(eth_usd)*int(eth)
-            st.write(f"This Account has a balance of {eth} ETHER or ${usd_balance:,.2f} USD.")
+            st.write(f"This account has a balance of **{tx_hash:,.2f} WEI:**")
+            st.write(f"**{eth:,.2f} ETHER** or **${usd_balance:,.2f} USD**.")
