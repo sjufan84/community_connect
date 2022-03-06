@@ -35,7 +35,6 @@ contract CommunityConnect {
     bool isReceived = false;
     bool invoicePaid = false;
 
-
     mapping(address => uint) balances;
 
     // adds ETH to smart contract.  include `payable` modifer so contract accepts ETH that gets sent to this function
@@ -151,14 +150,14 @@ contract CommunityConnect {
     function getPaidStatus() view public returns (bool) {
         return invoicePaid;
     }
-
-    function requestCash(uint cashAmount) public {
+    /* Use sendRemittance function
+    #function requestCash(uint cashAmount) public {
         require (msg.sender == authorizedRecipient, "You are not authorized to receive cash");
         cashRecipient = msg.sender;
         cashRequested = cashAmount;
         cashRequestStatus = "open";
     }
-
+    */
     function viewCashRequest() view public returns (address, uint256, string memory) {
         return (cashRecipient, cashRequested, cashRequestStatus);
     }
@@ -173,6 +172,7 @@ contract CommunityConnect {
         cashRequestStatus = "complete";
     }
     
+
     // This function allows the nonprofit to send cash assistance to users
     function sendRemittance(uint value, address payable recipient, address sender) public {
         require(sender == nonProfit && recipient == authorizedRecipient, "The recipient address is not authorized!");
