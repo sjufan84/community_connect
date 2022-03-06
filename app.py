@@ -10,9 +10,7 @@ import singleton_requests
 #import ipfs
 import yfinance as yf
 
-#from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
-
-from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
+# from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
 
 load_dotenv()
 
@@ -87,7 +85,6 @@ if page == 'Make a Donation':
         submitted = st.form_submit_button("Donate")
         if submitted:
             tx_hash = contract.functions.deposit(donation).transact({
-            'to': nonprofit,
             'from': donor,
             'value': donation
             })
@@ -96,9 +93,10 @@ if page == 'Make a Donation':
             # st.write("Transaction receipt mined:")
             dict_receipt = dict(receipt)
             # st.write((dict_receipt))
+            contract_address = dict_receipt["to"]
 
             # Access the balance of an account using the address
-            contract_balance = w3.eth.get_balance(nonprofit)
+            contract_balance = w3.eth.get_balance(contract_address)
             # st.write(contract_balance)
 
             # Access information for the most recent block
@@ -115,13 +113,13 @@ if page == 'Make a Donation':
             columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
             block_chain_df.columns = columns
 
-            block_json_df = convert_df_to_json(block_chain_df)
-            ipfs_hash = pin_json_to_ipfs(block_json_df)
-            returned_block_df = retrieve_block_df(ipfs_hash)
+            #block_json_df = convert_df_to_json(block_chain_df)
+            #ipfs_hash = pin_json_to_ipfs(block_json_df)
+            #returned_block_df = retrieve_block_df(ipfs_hash)
 
             st.write(block_chain_df)
             st.balloons()
-            st.write(block_json_df, ipfs_hash, returned_block_df)
+            #st.write(block_json_df, ipfs_hash, returned_block_df)
 
 #ipfs_hash = pin_json_to_ipfs(block_json_df)
 #block_df = retrieve_block_df(ipfs_hash)
@@ -137,7 +135,7 @@ if page == 'Submit a Request':
         newProductType = st.selectbox('Select type of assistance requested', options = ['Food', 'Supplies', 'Ride'])
         
         # Input quantity of items requested if food or supplies, else ride quantity defaults to 1
-        if newProductType != 'Ride':
+        if newProductType != "Ride":
             newProductCount = st.number_input('Enter product quantity requested')
         else:
             newProductCount = 1
@@ -154,9 +152,10 @@ if page == 'Submit a Request':
             receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
             dict_receipt = dict(receipt)
+            contract_address = dict_receipt["to"]
 
             # Access the balance of an account using the address
-            contract_balance = w3.eth.get_balance(nonprofit)
+            contract_balance = w3.eth.get_balance(contract_address)
             # st.write(contract_balance)
 
             # Access information for the most recent block
@@ -224,10 +223,11 @@ if page == 'View Open Request':
             # Display the information on the webpage
             receipt = w3.eth.waitForTransactionReceipt(tx_hash_1)
             dict_receipt = dict(receipt)
+            contract_address = dict_receipt["to"]
             # st.write((dict_receipt))
 
             # Access the balance of an account using the address
-            contract_balance = w3.eth.get_balance(nonprofit)
+            contract_balance = w3.eth.get_balance(contract_address)
             # st.write(contract_balance)
 
             # Access information for the most recent block
@@ -268,9 +268,10 @@ if page == 'View Open Request':
                 # st.write("Transaction receipt mined:")
                 dict_receipt = dict(receipt)
                 st.write((dict_receipt))
+                contract_address = dict_receipt["to"]
 
                 # Access the balance of an account using the address
-                contract_balance = w3.eth.get_balance(nonprofit)
+                contract_balance = w3.eth.get_balance(contract_address)
                 # st.write(contract_balance)
 
                 # Access information for the most recent block
@@ -312,10 +313,10 @@ if page == 'Request for Cash Assistance':
             receipt = w3.eth.waitForTransactionReceipt(tx_hash)
             # st.write("Transaction receipt mined:")
             dict_receipt = dict(receipt)
-            # st.write((dict_receipt))
+            contract_address = dict_receipt["to"]
 
             # Access the balance of an account using the address
-            contract_balance = w3.eth.get_balance(nonprofit)
+            contract_balance = w3.eth.get_balance(contract_address)
             # st.write(contract_balance)
 
             # Access information for the most recent block
@@ -345,7 +346,7 @@ if page == 'Get Balances':
             tx_hash = w3.eth.get_balance(accountowners)
             wei = round(tx_hash,2) 
             eth = w3.fromWei(wei, "ether")
-            eth_df = yf.download(tickers="ETH-USD",period="today" )
+            eth_df = yf.download(tickers="ETH-USD",period="today")
             eth_usd = eth_df.iloc[0]["Close"]
             usd_balance = int(eth_usd)*int(eth)
             st.write(f"This account has a balance of **{tx_hash:,.2f} WEI:**")
