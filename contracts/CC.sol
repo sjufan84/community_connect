@@ -21,9 +21,9 @@ contract CommunityConnect {
     string productType;
     uint256 productCount;
     // cash request info
-    address payable cashRecipient;
+    //address payable cashRecipient;
     uint256 cashRequested;
-    string cashRequestStatus;
+    //string cashRequestStatus;
     // invoice data
     uint256 invoiceNumber;
     uint256 compensationRequested;
@@ -32,8 +32,8 @@ contract CommunityConnect {
     //booleans
     bool isOffer = false;
     bool isApproved = false;
-    bool isReceived = false;
-    bool invoicePaid = false;
+    //bool isReceived = false;
+    //bool invoicePaid = false;
 
     mapping(address => uint) balances;
 
@@ -45,15 +45,15 @@ contract CommunityConnect {
     }
     
     // This function allows anyone to check the balance of any address
-    function getBalance(address recipient) public view returns(uint256) {
+    /*function getBalance(address recipient) public view returns(uint256) {
         //return balances[recipient];
         return address(recipient).balance;
-    }
+    }*/
     
     // This function allows view of info
-    function getInfo() view public returns(address, address payable, uint) {
+    /*function getInfo() view public returns(address, address payable, uint) {
         return (nonProfit, authorizedRecipient, contractBalance);
-    }
+    }*/
     
     // This function allows Users to make requests to the contract
     function registerRequest(address payable newAccountOwner, string memory newName, string memory newProductType, uint256 newProductCount) public {
@@ -71,14 +71,14 @@ contract CommunityConnect {
     
     // This function allows the supplier to agree to fill the order and send an amount to be paid for goods rendered
     // Is this necessary?
-    function fillInvoice(address, uint256, bool ) public {
+    /*function fillInvoice(address, uint256, bool ) public {
         require(isOffer=true && msg.sender == supplier);
-    }
+    }*/
 
     // Just viewing the offer status of a request
-    function getOfferStatus() view public returns(bool) {
+    /*function getOfferStatus() view public returns(bool) {
         return isOffer;
-    }
+    }*/
     
     // This function is a check for Suppliers to call when they agree to fill the request
     function fillRequest(address payable newSupplier, uint256 compensation, uint256 newInvoiceNumber) public returns(address, uint256, uint256) {
@@ -91,10 +91,10 @@ contract CommunityConnect {
     }
     
     // Users can view request fill offers
-    function viewFillOffer() view public returns (address, uint256, uint256, string memory, string memory, uint256) {
+    /*function viewFillOffer() view public returns (address, uint256, uint256, string memory, string memory, uint256) {
         require(isOffer == true, "No fill offers to view");
         return (supplier, compensationRequested, invoiceNumber, productName, productType, productCount);
-    }
+    }*/
 
     // non-profit can approve fillOffer here
     function approveFillOffer() public {
@@ -116,23 +116,23 @@ contract CommunityConnect {
     }*/
 
     // This function allows the Nonprofit to see the invoice Suppliers have sent
-    function viewApprovedInvoice() view public returns(address, uint256, uint256) {
+    /*function viewApprovedInvoice() view public returns(address, uint256, uint256) {
         return (approvedSupplier, compensationApproved, approvedInvoiceNumber);
-    }
+    }*/
     
     // user signifies they received the goods/service
-    function userReceived() public {
+    /*function userReceived() public {
         require (msg.sender == accountOwner || msg.sender == nonProfit, "You are not approved to receive this order");
         isReceived=true;
-    }
+    }*/
     
     // view received status 
-    function getReceivedStatus() view public returns(bool) {
+    /*function getReceivedStatus() view public returns(bool) {
         return isReceived;
-    }
+    }*/
 
     // This function allows the Nonprofit to pay the Supplier, I think we should change this to the Nonprofit sends the money but it comes from contract 
-    function payInvoice(uint256 invoiceNum) public payable {
+    /*function payInvoice(uint256 invoiceNum) public payable {
         // require(recipient == approvedSupplier, "This address is not authorized to receive compensation!");
         // do we need this?
         // require(isOffer == true, "Offer to fill does not exist!");
@@ -144,12 +144,12 @@ contract CommunityConnect {
         approvedSupplier.transfer(compensationRequested);
         contractBalance -= compensationApproved;
         invoicePaid = true;
-    }
+    }*/
 
     // viewer function to see invoice payment status
-    function getPaidStatus() view public returns (bool) {
+    /*function getPaidStatus() view public returns (bool) {
         return invoicePaid;
-    }
+    }*/
     /* Use sendRemittance function
     #function requestCash(uint cashAmount) public {
         require (msg.sender == authorizedRecipient, "You are not authorized to receive cash");
@@ -158,11 +158,11 @@ contract CommunityConnect {
         cashRequestStatus = "open";
     }
     */
-    function viewCashRequest() view public returns (address, uint256, string memory) {
+    /*function viewCashRequest() view public returns (address, uint256, string memory) {
         return (cashRecipient, cashRequested, cashRequestStatus);
-    }
+    }*/
 
-    function fillCashRequest(address payable recipient, uint256 amount) public {
+    /*function fillCashRequest(address payable recipient, uint256 amount) public {
         require (msg.sender == nonProfit, "You are not authorized to send cash");
         require (recipient == cashRecipient, "This recipient has not requested cash assistance");
         require (amount == cashRequested, "The amount you are trying to send is different than the one requested");
@@ -170,11 +170,10 @@ contract CommunityConnect {
         recipient.transfer(amount);
         contractBalance -= amount;
         cashRequestStatus = "complete";
-    }
-    
+    }*/
 
     // This function allows the nonprofit to send cash assistance to users
-    function sendRemittance(uint value, address payable recipient, address sender) public {
+    function sendCash(uint value, address payable recipient, address sender) public {
         require(sender == nonProfit && recipient == authorizedRecipient, "The recipient address is not authorized!");
         recipient.transfer(value);
         contractBalance = address(this).balance;
