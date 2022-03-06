@@ -32,12 +32,8 @@
 		"constant": false,
 		"inputs": [
 			{
-<<<<<<< HEAD
-				"name": "compensation",
-=======
 				"internalType": "uint256",
 				"name": "donation",
->>>>>>> 46a6a34aa7b1df141a7e274c1a5ba03e5ee10b6a
 				"type": "uint256"
 			}
 		],
@@ -96,62 +92,6 @@
 		"constant": false,
 		"inputs": [
 			{
-<<<<<<< HEAD
-				"name": "cashAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "requestCash",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "viewCashRequest",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "string"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "recipient",
-				"type": "address"
-			},
-			{
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "fillCashRequest",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getInfo",
-=======
 				"internalType": "address payable",
 				"name": "newSupplier",
 				"type": "address"
@@ -168,7 +108,6 @@
 			}
 		],
 		"name": "fillRequest",
->>>>>>> 46a6a34aa7b1df141a7e274c1a5ba03e5ee10b6a
 		"outputs": [
 			{
 				"internalType": "address",
@@ -267,12 +206,8 @@
 		"type": "function"
 	},
 	{
-		"constant": false,
+		"constant": true,
 		"inputs": [],
-<<<<<<< HEAD
-		"name": "approveFillOffer",
-		"outputs": [],
-=======
 		"name": "getReceivedStatus",
 		"outputs": [
 			{
@@ -281,19 +216,14 @@
 				"type": "bool"
 			}
 		],
->>>>>>> 46a6a34aa7b1df141a7e274c1a5ba03e5ee10b6a
 		"payable": false,
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"constant": false,
 		"inputs": [
 			{
-<<<<<<< HEAD
-				"name": "invoiceNum",
-				"type": "uint256"
-=======
 				"internalType": "uint256",
 				"name": "invoiceNum",
 				"type": "uint256"
@@ -327,27 +257,12 @@
 				"internalType": "uint256",
 				"name": "newProductCount",
 				"type": "uint256"
->>>>>>> 46a6a34aa7b1df141a7e274c1a5ba03e5ee10b6a
 			}
 		],
 		"name": "registerRequest",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getOfferStatus",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -387,18 +302,11 @@
 	{
 		"constant": true,
 		"inputs": [],
-<<<<<<< HEAD
-		"name": "getPaidStatus",
-=======
 		"name": "viewApprovedInvoice",
->>>>>>> 46a6a34aa7b1df141a7e274c1a5ba03e5ee10b6a
 		"outputs": [
 			{
 				"internalType": "address",
 				"name": "",
-<<<<<<< HEAD
-				"type": "bool"
-=======
 				"type": "address"
 			},
 			{
@@ -410,7 +318,6 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
->>>>>>> 46a6a34aa7b1df141a7e274c1a5ba03e5ee10b6a
 			}
 		],
 		"payable": false,
@@ -447,41 +354,6 @@
 		"inputs": [],
 		"name": "viewFillOffer",
 		"outputs": [
-<<<<<<< HEAD
-			{
-				"name": "",
-				"type": "address"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "string"
-			},
-			{
-				"name": "",
-				"type": "string"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-=======
->>>>>>> 46a6a34aa7b1df141a7e274c1a5ba03e5ee10b6a
 			{
 				"internalType": "address",
 				"name": "",
