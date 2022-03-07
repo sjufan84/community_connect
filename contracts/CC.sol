@@ -155,7 +155,15 @@ contract CommunityConnect {
         cashRequestStatus = "open";
     }
     */
-    /*function viewCashRequest() view public returns (address, uint256, string memory) {
+
+
+    // This function allows Users to make requests of cash to the contract
+    function requestCash(address payable, uint256 amount, string memory) public {
+        cashRequested = amount;
+
+    }
+    function viewCashRequest() view public returns (address, uint256, string memory) {
+
         return (cashRecipient, cashRequested, cashRequestStatus);
     }*/
 
