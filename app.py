@@ -65,8 +65,6 @@ st.sidebar.subheader("How Can We Help?")
 page = st.sidebar.radio('', options=['Make a Donation', 'Request for Goods', 'Request for Cash Assistance', 'Get Balances'])
 st.sidebar.markdown("""---""")
 
-#['Make a Donation', 'Submit a Request', 'View Open Request', 'Pay Invoice', 'Request for Cash Assistance', 'Get Balances', 'View Fill Offers']
-
 # Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
 # in different ways
 block_chain_df = pd.DataFrame()
@@ -131,10 +129,10 @@ if page == 'Make a Donation':
 if page == 'Request for Goods':
     
     st.header('Submit a Goods Request')
-    st.subheader('Please fill out request details below')
     goods_options = st.sidebar.radio('', options=['Submit a Goods Request', 'View Open Goods Request', 'View Fill Goods Offers', 'Pay Supplier Invoice'])
 
     if goods_options == 'Submit a Goods Request':
+        st.subheader('Please fill out request details below')
         with st.form("submitRequest", clear_on_submit=True):
             owner_address = st.selectbox('Select your address to submit request form', options = accounts[5:10])
             newName = st.text_input('What is the name of the product?')
@@ -181,18 +179,14 @@ if page == 'Request for Goods':
                 st.write(block_chain_df)
 
     if goods_options == 'View Open Goods Request':
-        
-        st.header('View Open Goods Request')
-            
+        st.subheader('Supplier, please fill out form if you would like to fulfill this request')     
         with st.form('fillRequest', clear_on_submit=True):    
-
             request = contract.functions.viewRequest().call()
             st.markdown(f'**Requestor Address:**   {request[0]}')
             st.markdown(f'**Name of Item Requested:**   {request[1]}')
             st.markdown(f'**Type of Product:**   {request[2]}')
             st.markdown(f'**Quantity of Product:**   {request[3]}')
 
-            st.subheader('Supplier, please fill out form if you would like to fulfill this request')    
             supplier= st.selectbox(f'Supplier Address', [supplier_address])
             amount = st.number_input('Compensation requested')
             invoiceNumber = st.number_input('Invoice Number')
@@ -241,8 +235,7 @@ if page == 'Request for Goods':
 
     if goods_options == 'View Fill Goods Offers':
         
-        st.header('View Fill Goods Offers')
-            
+        st.subheader("Community Connect to Review and Approve Supplier's Offer to Fulfill Request")  
         with st.form('fillRequest', clear_on_submit=True):    
 
             request = contract.functions.viewFillOffer().call()
@@ -256,27 +249,14 @@ if page == 'Request for Goods':
             st.markdown(f'**Type of Product:**   {request[4]}')
             st.markdown(f'**Quantity of Product:**   {request[5]}')
 
-            '''function approveFillOffer() public {
-            require(msg.sender == nonProfit, "You are not allowed to approve offers");
-            isApproved = true;
-            compensationApproved = compensationRequested;
-            approvedInvoiceNumber = invoiceNumber;
-            approvedSupplier = supplier;'''
-        
-
-            #supplier = st.text_input('Name')
-            #type = st.text_input('Type')
-            nonce = w3.eth.get_transaction_count(nonprofit, 'latest')
-            payload={'from': nonprofit, 'nonce': nonce, "gasPrice": w3.eth.gas_price}
             submitted = st.form_submit_button("Approve Offer")
             if submitted:
-                approve_tx = contract.functions.approveFillOffer(
-                ).buildTransaction(payload)
-                sign_tx = w3.eth.account.signTransaction(approve_tx, nonprofit_key)
-                tx_hash_1 = w3.eth.sendRawTransaction(sign_tx.rawTransaction)
+                tx_hash = contract.functions.approveFillOffer().transact({
+                    'from': nonprofit,
+                })
                 
                 # Display the information on the webpage
-                receipt = w3.eth.waitForTransactionReceipt(tx_hash_1)
+                receipt = w3.eth.waitForTransactionReceipt(tx_hash)
                 dict_receipt = dict(receipt)
                 contract_address = dict_receipt["to"]
                 # st.write((dict_receipt))
@@ -304,9 +284,7 @@ if page == 'Request for Goods':
 
     if goods_options == 'Pay Supplier Invoice':
         
-        st.header('Pay Supplier Invoice')
-        st.subheader('Confirm below goods have been received and invoice is approved to be paid')
-
+        st.subheader('Goods Received and Invoice Approved to be Paid to Supplier')
         with st.form("payInvoice", clear_on_submit=True):
 
             request = contract.functions.viewApprovedInvoice().call()
@@ -348,8 +326,8 @@ if page == 'Request for Goods':
                 block_chain_df.columns = columns
 
                 st.write(block_chain_df)
-                    
-                #st.subheader("Offer with Community Connect for Approval")
+                st.write(f"Goods Request submission for **Invoice {invoiceNum}** has been fulfilled.")
+                st.balloons()
 
 if page == 'Pay Invoice':
     
@@ -401,57 +379,67 @@ if page == 'Pay Invoice':
             #st.subheader("Offer with Community Connect for Approval")
 
 if page == 'Request for Cash Assistance':
+
     st.header('Request for Cash Assistance')
+    cash_options = st.sidebar.radio('', options=['Submit Request for Cash', 'Review Cash Request'])
 
-    st.sidebar.radio('', options=['Submit Request for Cash', 'View Cash Request', 'Approve Cash Request'])
+    if cash_options == 'Submit Request for Cash':
+        with st.form("cash request", clear_on_submit=True):
 
-    with st.form("cash request", clear_on_submit=True):
+            recipient = st.selectbox('Provide Your Public Address', options=accounts[5:10])  # Currently only first hash listed is the only authorizedRecipient in our smart contract
+            amount = st.number_input('Provide Amount Needed')
+            int_amount = int(amount)
+            address = st.multiselect('Your request will be fulfilled by:', [nonprofit])
 
-        recipient = st.selectbox('Provide Your Public Address', options=accounts[5:10])  # Currently only first hash listed is the only authorizedRecipient in our smart contract
-        amount = st.number_input('Provide Amount Needed')
-        int_amount = int(amount)
-        address = st.multiselect('Your request will be fulfilled by:', [nonprofit])
-
-        submitted = st.form_submit_button("Request for Cash Assistance")
-        if submitted:
-            tx_hash = contract.functions.requestCash(int_amount, recipient, nonprofit).transact({
-                'from': nonprofit,
-            })
-            # Display the information on the webpage
-            receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-            # st.write("Transaction receipt mined:")
-            dict_receipt = dict(receipt)
-            contract_address = dict_receipt["to"]
-
-            # Access the balance of an account using the address
-            contract_balance = w3.eth.get_balance(contract_address)
-            # st.write(contract_balance)
-
-            # Access information for the most recent block
-            block_info = w3.eth.get_block("latest")
-            # st.write(dict(block_info))
-
-            # calls receipt to add block
-            singleton_requests.add_block(receipt, contract_balance, block_info)
-
-            block_chain = singleton_requests.get_receipts()
-            # st.write(block_chain)
-            block_chain_df = pd.DataFrame.from_dict(block_chain)
-
-            columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
-            block_chain_df.columns = columns
-
-            st.write(block_chain_df)
-
-            st.subheader("Request with Community Connect for Approval")
-            submit = st.form_submit_button("Approve Request")
-            if submit:
-                nonprofit_approved = contract.functions.sendCash(int_amount, recipient, nonprofit).transact({
-                'from': nonprofit,
+            submitted = st.form_submit_button("Request for Cash Assistance")
+            if submitted:
+                tx_hash = contract.functions.requestCash(int_amount, recipient, nonprofit).transact({
+                    'from': nonprofit,
                 })
                 # Display the information on the webpage
-                receipt = w3.eth.waitForTransactionReceipt(nonprofit_approved)
+                receipt = w3.eth.waitForTransactionReceipt(tx_hash)
                 # st.write("Transaction receipt mined:")
+                dict_receipt = dict(receipt)
+                contract_address = dict_receipt["to"]
+
+                # Access the balance of an account using the address
+                contract_balance = w3.eth.get_balance(contract_address)
+                # st.write(contract_balance)
+
+                # Access information for the most recent block
+                block_info = w3.eth.get_block("latest")
+                # st.write(dict(block_info))
+
+                # calls receipt to add block
+                singleton_requests.add_block(receipt, contract_balance, block_info)
+
+                block_chain = singleton_requests.get_receipts()
+                # st.write(block_chain)
+                block_chain_df = pd.DataFrame.from_dict(block_chain)
+
+                columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
+                block_chain_df.columns = columns
+
+                st.write(block_chain_df)
+
+    if cash_options == 'Review Cash Request':
+        
+        st.subheader("Open Cash Request Sent for Approval")
+        with st.form("viewCashInvoice", clear_on_submit=True):
+
+            request = contract.functions.viewCashRequest().call()
+            st.markdown(f'**Requestor Address:**   {request[0]}')
+            st.markdown(f'**Amount Requested:**   {request[1]}')
+            
+            submitted = st.form_submit_button("Approve Cash Request")
+            if submitted:
+                tx_hash = contract.functions.sendCash(int_amount).transact({
+                    'from': nonprofit,
+                })
+
+                # Display the information on the webpage
+                receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+
                 dict_receipt = dict(receipt)
                 contract_address = dict_receipt["to"]
 
