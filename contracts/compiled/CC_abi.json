@@ -1,8 +1,228 @@
 [
 	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "invoiceNum",
+				"type": "uint256"
+			},
+			{
+				"name": "received",
+				"type": "bool"
+			}
+		],
+		"name": "payInvoice",
+		"outputs": [],
 		"payable": true,
 		"stateMutability": "payable",
-		"type": "fallback"
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "viewApprovedInvoice",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "newSupplier",
+				"type": "address"
+			},
+			{
+				"name": "compensation",
+				"type": "uint256"
+			},
+			{
+				"name": "newInvoiceNumber",
+				"type": "uint256"
+			}
+		],
+		"name": "fillRequest",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "viewCashRequest",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "fillCashRequest",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getInfo",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "viewRequest",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"name": "fillInvoice",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "newAccountOwner",
+				"type": "address"
+			},
+			{
+				"name": "newName",
+				"type": "string"
+			},
+			{
+				"name": "newProductType",
+				"type": "string"
+			},
+			{
+				"name": "newProductCount",
+				"type": "uint256"
+			}
+		],
+		"name": "registerRequest",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "contractBalance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
 	},
 	{
 		"constant": false,
@@ -16,12 +236,11 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "contractBalance",
+		"name": "getOfferStatus",
 		"outputs": [
 			{
-				"internalType": "uint256",
 				"name": "",
-				"type": "uint256"
+				"type": "bool"
 			}
 		],
 		"payable": false,
@@ -32,7 +251,6 @@
 		"constant": false,
 		"inputs": [
 			{
-				"internalType": "uint256",
 				"name": "donation",
 				"type": "uint256"
 			}
@@ -47,68 +265,19 @@
 		"constant": false,
 		"inputs": [
 			{
-				"internalType": "address payable",
-				"name": "newSupplier",
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"name": "recipient",
 				"type": "address"
 			},
 			{
-				"internalType": "uint256",
-				"name": "compensation",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "newInvoiceNumber",
-				"type": "uint256"
-			}
-		],
-		"name": "fillRequest",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
+				"name": "sender",
 				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
 			}
 		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"internalType": "address payable",
-				"name": "newAccountOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "newName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "newProductType",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "newProductCount",
-				"type": "uint256"
-			}
-		],
-		"name": "registerRequest",
+		"name": "sendRemittance",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -116,24 +285,8 @@
 	},
 	{
 		"constant": false,
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address payable",
-				"name": "recipient",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			}
-		],
-		"name": "sendCash",
+		"inputs": [],
+		"name": "userReceived",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -142,25 +295,57 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "viewRequest",
+		"name": "getPaidStatus",
 		"outputs": [
 			{
-				"internalType": "address",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getReceivedStatus",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "viewFillOffer",
+		"outputs": [
+			{
 				"name": "",
 				"type": "address"
 			},
 			{
-				"internalType": "string",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
 				"name": "",
 				"type": "string"
 			},
 			{
-				"internalType": "string",
 				"name": "",
 				"type": "string"
 			},
 			{
-				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -168,5 +353,29 @@
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "recipient",
+				"type": "address"
+			}
+		],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "fallback"
 	}
 ]
