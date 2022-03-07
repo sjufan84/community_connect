@@ -28,8 +28,6 @@ Additional updates/ uploads for usability was added by [Stephen Thomas](mailto:s
 
 Additional updates/ uploads for usability was added by [Christina San Diego](mailto:cbuted@gmail.com)
 
-Additional updates/ uploads for usability was added by [Dylan Nelson](mailto:)
-
 ## License
 
 MIT License
