@@ -54,14 +54,17 @@ nonprofit = accounts[3]
 supplier_address = accounts[4]
 supplier_key = os.getenv("SUPPLIER_PRIVATE_KEY")
 nonprofit_key = os.getenv('NONPROFIT_PRIVATE_KEY')
+donor = accounts[0]
 
 #st.header("""This is a decentralized application that facilitates an ecosystem of donors, non-profits, and end users in the distribution of aid""")
 st.sidebar.title("Community Connect App")
 #st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
 
 st.sidebar.subheader("How Can We Help?")
-page = st.sidebar.radio('', options=['Make a Donation', 'Submit a Request', 'View Open Request', 'Request for Cash Assistance', 'Get Balances', 'View Fill Offers', 'Pay Invoice'])
+page = st.sidebar.radio('', options=['Make a Donation', 'Request for Goods', 'Request for Cash Assistance', 'Get Balances'])
 st.sidebar.markdown("""---""")
+
+#['Make a Donation', 'Submit a Request', 'View Open Request', 'Pay Invoice', 'Request for Cash Assistance', 'Get Balances', 'View Fill Offers']
 
 # Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
 # in different ways
@@ -78,10 +81,9 @@ if page == 'Make a Donation':
     
         accounts = w3.eth.accounts
       
-        address = st.multiselect('Select a Recipient', [nonprofit])
+        address = st.selectbox('Select a Recipient', options=[nonprofit])
         donation = st.number_input("How much would you like to donate?")
         donation = int(donation)
-        donor = accounts[0]
 
         submitted = st.form_submit_button("Donate")
         if submitted:
@@ -125,117 +127,233 @@ if page == 'Make a Donation':
 #ipfs_hash = pin_json_to_ipfs(block_json_df)
 #block_df = retrieve_block_df(ipfs_hash)
 
-if page == 'Submit a Request':
+if page == 'Request for Goods':
     
-    st.header('Submit a Request')
+    st.header('Submit a Goods Request')
     st.subheader('Please fill out request details below')
+    goods_options = st.sidebar.radio('', options=['Submit a Goods Request', 'View Open Goods Request', 'View Fill Goods Offers', 'Pay Supplier Invoice'])
 
-    with st.form("submitRequest", clear_on_submit=True):
-        owner_address = st.selectbox('Select your address to submit request form', options = accounts[5:10])
-        newName = st.text_input('What is the name of the product?')
-        newProductType = st.selectbox('Select type of assistance requested', options = ['Food', 'Supplies', 'Ride'])
-        
-        # Input quantity of items requested if food or supplies, else ride quantity defaults to 1
-        if newProductType != "Ride":
-            newProductCount = st.number_input('Enter product quantity requested')
-        else:
-            newProductCount = 1
-
-        submitted = st.form_submit_button("Register Request")
-        if submitted:
-            tx_hash = contract.functions.registerRequest(
-                owner_address,
-                newName,
-                newProductType,
-                int(newProductCount)
-            ).transact({'from' : owner_address})
-            # Display the information on the webpage
-            receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-
-            dict_receipt = dict(receipt)
-            contract_address = dict_receipt["to"]
-
-            # Access the balance of an account using the address
-            contract_balance = w3.eth.get_balance(contract_address)
-            # st.write(contract_balance)
-
-            # Access information for the most recent block
-            block_info = w3.eth.get_block("latest")
-            # st.write(dict(block_info))
-
-            # calls receipt to add block
-            singleton_requests.add_block(receipt, contract_balance, block_info)
-
-            block_chain = singleton_requests.get_receipts()
-            # st.write(block_chain)
-            block_chain_df = pd.DataFrame.from_dict(block_chain)
-
-            columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
-            block_chain_df.columns = columns
-
-            st.write(block_chain_df)
-
-if page == 'View Open Request':
-    
-    st.header('Open Requests')
-        
-    with st.form('fillRequest', clear_on_submit=True):    
-
-        request = contract.functions.viewRequest().call()
-        st.markdown(f'**Requestor Address:**   {request[0]}')
-        st.markdown(f'**Name of Item Requested:**   {request[1]}')
-        st.markdown(f'**Type of Product:**   {request[2]}')
-        st.markdown(f'**Quantity of Product:**   {request[3]}')
-
-        st.subheader('Supplier, please fill out form if you would like to fulfill this request')    
-        supplier= st.selectbox(f'Supplier Address', [supplier_address])
-        amount = st.number_input('Compensation requested')
-        invoiceNumber = st.number_input('Invoice Number')
-
-        #supplier = st.text_input('Name')
-        #type = st.text_input('Type')
-        nonce = w3.eth.get_transaction_count(supplier, 'latest')
-        payload={'from': supplier, 'nonce': nonce, "gasPrice": w3.eth.gas_price}
-        submitted = st.form_submit_button("Send Offer")
-        if submitted:
-            approve_tx = contract.functions.fillRequest(
-                supplier,
-                int(amount),
-                int(invoiceNumber)
-            ).buildTransaction(payload)
-            sign_tx = w3.eth.account.signTransaction(approve_tx, supplier_key)
-            tx_hash_1 = w3.eth.sendRawTransaction(sign_tx.rawTransaction)
+    if goods_options == 'Submit a Goods Request':
+        with st.form("submitRequest", clear_on_submit=True):
+            owner_address = st.selectbox('Select your address to submit request form', options = accounts[5:10])
+            newName = st.text_input('What is the name of the product?')
+            newProductType = st.selectbox('Select type of assistance requested', options = ['Food', 'Supplies', 'Ride'])
             
-            # Display the information on the webpage
-            receipt = w3.eth.waitForTransactionReceipt(tx_hash_1)
-            dict_receipt = dict(receipt)
-            contract_address = dict_receipt["to"]
-            # st.write((dict_receipt))
+            # Input quantity of items requested if food or supplies, else ride quantity defaults to 1
+            if newProductType != "Ride":
+                newProductCount = st.number_input('Enter product quantity requested')
+            else:
+                newProductCount = 1
 
-            # Access the balance of an account using the address
-            contract_balance = w3.eth.get_balance(contract_address)
-            # st.write(contract_balance)
+            submitted = st.form_submit_button("Register Request")
+            if submitted:
+                tx_hash = contract.functions.registerRequest(
+                    owner_address,
+                    newName,
+                    newProductType,
+                    int(newProductCount)
+                ).transact({'from' : owner_address})
+                # Display the information on the webpage
+                receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
-            # Access information for the most recent block
-            block_info = w3.eth.get_block("latest")
-            # st.write(dict(block_info))
+                dict_receipt = dict(receipt)
+                contract_address = dict_receipt["to"]
 
-            # calls receipt to add block
-            singleton_requests.add_block(receipt, contract_balance, block_info)
+                # Access the balance of an account using the address
+                contract_balance = w3.eth.get_balance(contract_address)
+                # st.write(contract_balance)
 
-            block_chain = singleton_requests.get_receipts()
-            # st.write(block_chain)
-            block_chain_df = pd.DataFrame.from_dict(block_chain)
+                # Access information for the most recent block
+                block_info = w3.eth.get_block("latest")
+                # st.write(dict(block_info))
 
-            columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
-            block_chain_df.columns = columns
+                # calls receipt to add block
+                singleton_requests.add_block(receipt, contract_balance, block_info)
 
-            st.write(block_chain_df)
+                block_chain = singleton_requests.get_receipts()
+                # st.write(block_chain)
+                block_chain_df = pd.DataFrame.from_dict(block_chain)
+
+                columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
+                block_chain_df.columns = columns
+
+                st.write(block_chain_df)
+
+    if goods_options == 'View Open Goods Request':
+        
+        st.header('View Open Goods Request')
+            
+        with st.form('fillRequest', clear_on_submit=True):    
+
+            request = contract.functions.viewRequest().call()
+            st.markdown(f'**Requestor Address:**   {request[0]}')
+            st.markdown(f'**Name of Item Requested:**   {request[1]}')
+            st.markdown(f'**Type of Product:**   {request[2]}')
+            st.markdown(f'**Quantity of Product:**   {request[3]}')
+
+            st.subheader('Supplier, please fill out form if you would like to fulfill this request')    
+            supplier= st.selectbox(f'Supplier Address', [supplier_address])
+            amount = st.number_input('Compensation requested')
+            invoiceNumber = st.number_input('Invoice Number')
+
+            #supplier = st.text_input('Name')
+            #type = st.text_input('Type')
+            nonce = w3.eth.get_transaction_count(supplier, 'latest')
+            payload={'from': supplier, 'nonce': nonce, "gasPrice": w3.eth.gas_price}
+            submitted = st.form_submit_button("Send Offer")
+            if submitted:
+                approve_tx = contract.functions.fillRequest(
+                    supplier,
+                    int(amount),
+                    int(invoiceNumber)
+                ).buildTransaction(payload)
+                sign_tx = w3.eth.account.signTransaction(approve_tx, supplier_key)
+                tx_hash_1 = w3.eth.sendRawTransaction(sign_tx.rawTransaction)
                 
-            st.subheader("Offer with Community Connect for Approval")
+                # Display the information on the webpage
+                receipt = w3.eth.waitForTransactionReceipt(tx_hash_1)
+                dict_receipt = dict(receipt)
+                contract_address = dict_receipt["to"]
+                # st.write((dict_receipt))
+
+                # Access the balance of an account using the address
+                contract_balance = w3.eth.get_balance(contract_address)
+                # st.write(contract_balance)
+
+                # Access information for the most recent block
+                block_info = w3.eth.get_block("latest")
+                # st.write(dict(block_info))
+
+                # calls receipt to add block
+                singleton_requests.add_block(receipt, contract_balance, block_info)
+
+                block_chain = singleton_requests.get_receipts()
+                # st.write(block_chain)
+                block_chain_df = pd.DataFrame.from_dict(block_chain)
+
+                columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
+                block_chain_df.columns = columns
+
+                st.write(block_chain_df)
+                    
+                st.subheader("Offer with Community Connect for Approval")
+
+    if goods_options == 'View Fill Goods Offers':
+        
+        st.header('View Fill Goods Offers')
+            
+        with st.form('fillRequest', clear_on_submit=True):    
+
+            request = contract.functions.viewFillOffer().call()
+            supplier = accounts[4]
+            compensationRequested = int(f'{request[1]}')
+            invoiceNumber = int(f'{request[2]}')
+            st.markdown(f'**Supplier Address:**   {request[0]}')
+            st.markdown(f'**Compensation Requested:**   {request[1]}')
+            st.markdown(f'**InvoiceNumber:**   {request[2]}')
+            st.markdown(f'**Product Name:**   {request[3]}')
+            st.markdown(f'**Type of Product:**   {request[4]}')
+            st.markdown(f'**Quantity of Product:**   {request[5]}')
+
+            '''function approveFillOffer() public {
+            require(msg.sender == nonProfit, "You are not allowed to approve offers");
+            isApproved = true;
+            compensationApproved = compensationRequested;
+            approvedInvoiceNumber = invoiceNumber;
+            approvedSupplier = supplier;'''
+        
+
+            #supplier = st.text_input('Name')
+            #type = st.text_input('Type')
+            nonce = w3.eth.get_transaction_count(nonprofit, 'latest')
+            payload={'from': nonprofit, 'nonce': nonce, "gasPrice": w3.eth.gas_price}
+            submitted = st.form_submit_button("Approve Offer")
+            if submitted:
+                approve_tx = contract.functions.approveFillOffer(
+                ).buildTransaction(payload)
+                sign_tx = w3.eth.account.signTransaction(approve_tx, nonprofit_key)
+                tx_hash_1 = w3.eth.sendRawTransaction(sign_tx.rawTransaction)
+                
+                # Display the information on the webpage
+                receipt = w3.eth.waitForTransactionReceipt(tx_hash_1)
+                dict_receipt = dict(receipt)
+                contract_address = dict_receipt["to"]
+                # st.write((dict_receipt))
+
+                # Access the balance of an account using the address
+                contract_balance = w3.eth.get_balance(contract_address)
+                # st.write(contract_balance)
+
+                # Access information for the most recent block
+                block_info = w3.eth.get_block("latest")
+                # st.write(dict(block_info))
+
+                # calls receipt to add block
+                singleton_requests.add_block(receipt, contract_balance, block_info)
+
+                block_chain = singleton_requests.get_receipts()
+                # st.write(block_chain)
+                block_chain_df = pd.DataFrame.from_dict(block_chain)
+
+                columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
+                block_chain_df.columns = columns
+
+                st.write(block_chain_df)
+
+
+    if goods_options == 'Pay Supplier Invoice':
+        
+        st.header('Pay Supplier Invoice')
+        st.subheader('Confirm below goods have been received and invoice is approved to be paid')
+
+        with st.form("payInvoice", clear_on_submit=True):
+
+            request = contract.functions.viewApprovedInvoice().call()
+            
+            
+            invoiceNum = int(f'{request[2]}')
+            st.markdown(f'**Approved Supplier Address:**   {request[0]}')
+            st.markdown(f'**Approved Compensation:**   {request[1]}')
+            st.markdown(f'**Approved Invoice Number:**   {request[2]}')
+            
+            submitted = st.form_submit_button("Pay Invoice")
+            if submitted:
+                tx_hash = contract.functions.payInvoice(
+                    invoiceNum=invoiceNum,
+                    received=True
+                ).transact({'from' : nonprofit})
+                # Display the information on the webpage
+                receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+
+                dict_receipt = dict(receipt)
+                contract_address = dict_receipt["to"]
+
+                # Access the balance of an account using the address
+                contract_balance = w3.eth.get_balance(contract_address)
+                # st.write(contract_balance)
+
+                # Access information for the most recent block
+                block_info = w3.eth.get_block("latest")
+                # st.write(dict(block_info))
+
+                # calls receipt to add block
+                singleton_requests.add_block(receipt, contract_balance, block_info)
+
+                block_chain = singleton_requests.get_receipts()
+                # st.write(block_chain)
+                block_chain_df = pd.DataFrame.from_dict(block_chain)
+
+                columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
+                block_chain_df.columns = columns
+
+                st.write(block_chain_df)
+                    
+                #st.subheader("Offer with Community Connect for Approval")
 
 if page == 'Request for Cash Assistance':
     st.header('Request for Cash Assistance')
+
+    st.sidebar.radio('', options=['Submit Request for Cash', 'View Cash Request', 'Approve Cash Request'])
 
     with st.form("cash request", clear_on_submit=True):
 
@@ -323,114 +441,3 @@ if page == 'Get Balances':
             usd_balance = int(eth_usd)*int(eth)
             st.write(f"This account has a balance of **{tx_hash:,.2f} WEI:**")
             st.write(f"**{eth:,.2f} ETHER** or **${usd_balance:,.2f} USD**.")
-             
-if page == 'View Fill Offers':
-    
-    st.header('Open Fill Offers')
-        
-    with st.form('fillRequest', clear_on_submit=True):    
-
-        request = contract.functions.viewFillOffer().call()
-        supplier = accounts[4]
-        compensationRequested = int(f'{request[1]}')
-        invoiceNumber = int(f'{request[2]}')
-        st.markdown(f'**Supplier Address:**   {request[0]}')
-        st.markdown(f'**Compensation Requested:**   {request[1]}')
-        st.markdown(f'**InvoiceNumber:**   {request[2]}')
-        st.markdown(f'**Product Name:**   {request[3]}')
-        st.markdown(f'**Type of Product:**   {request[4]}')
-        st.markdown(f'**Quantity of Product:**   {request[5]}')
-
-        '''function approveFillOffer() public {
-        require(msg.sender == nonProfit, "You are not allowed to approve offers");
-        isApproved = true;
-        compensationApproved = compensationRequested;
-        approvedInvoiceNumber = invoiceNumber;
-        approvedSupplier = supplier;'''
-    
-
-        #supplier = st.text_input('Name')
-        #type = st.text_input('Type')
-        nonce = w3.eth.get_transaction_count(nonprofit, 'latest')
-        payload={'from': nonprofit, 'nonce': nonce, "gasPrice": w3.eth.gas_price}
-        submitted = st.form_submit_button("Approve Offer")
-        if submitted:
-            approve_tx = contract.functions.approveFillOffer(
-            ).buildTransaction(payload)
-            sign_tx = w3.eth.account.signTransaction(approve_tx, nonprofit_key)
-            tx_hash_1 = w3.eth.sendRawTransaction(sign_tx.rawTransaction)
-            
-            # Display the information on the webpage
-            receipt = w3.eth.waitForTransactionReceipt(tx_hash_1)
-            dict_receipt = dict(receipt)
-            contract_address = dict_receipt["to"]
-            # st.write((dict_receipt))
-
-            # Access the balance of an account using the address
-            contract_balance = w3.eth.get_balance(contract_address)
-            # st.write(contract_balance)
-
-            # Access information for the most recent block
-            block_info = w3.eth.get_block("latest")
-            # st.write(dict(block_info))
-
-            # calls receipt to add block
-            singleton_requests.add_block(receipt, contract_balance, block_info)
-
-            block_chain = singleton_requests.get_receipts()
-            # st.write(block_chain)
-            block_chain_df = pd.DataFrame.from_dict(block_chain)
-
-            columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
-            block_chain_df.columns = columns
-
-            st.write(block_chain_df)
-
-if page == 'Pay Invoice':
-    
-    st.header('Pay Invoice')
-    st.subheader('Confirm below goods have been received and invoice is approved to be paid')
-
-    with st.form("payInvoice", clear_on_submit=True):
-
-        request = contract.functions.viewApprovedInvoice().call()
-        
-        
-        invoiceNum = int(f'{request[2]}')
-        st.markdown(f'**Approved Supplier Address:**   {request[0]}')
-        st.markdown(f'**Approved Compensation:**   {request[1]}')
-        st.markdown(f'**Approved Invoice Number:**   {request[2]}')
-        
-        submitted = st.form_submit_button("Pay Invoice")
-        if submitted:
-            tx_hash = contract.functions.payInvoice(
-                invoiceNum=invoiceNum,
-                received=True
-            ).transact({'from' : nonprofit})
-            # Display the information on the webpage
-            receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-
-            dict_receipt = dict(receipt)
-            contract_address = dict_receipt["to"]
-
-            # Access the balance of an account using the address
-            contract_balance = w3.eth.get_balance(contract_address)
-            # st.write(contract_balance)
-
-            # Access information for the most recent block
-            block_info = w3.eth.get_block("latest")
-            # st.write(dict(block_info))
-
-            # calls receipt to add block
-            singleton_requests.add_block(receipt, contract_balance, block_info)
-
-            block_chain = singleton_requests.get_receipts()
-            # st.write(block_chain)
-            block_chain_df = pd.DataFrame.from_dict(block_chain)
-
-            columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
-            block_chain_df.columns = columns
-
-            st.write(block_chain_df)
-                
-            #st.subheader("Offer with Community Connect for Approval")
