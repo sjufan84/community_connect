@@ -56,6 +56,7 @@ supplier_key = os.getenv("SUPPLIER_PRIVATE_KEY")
 nonprofit_key = os.getenv('NONPROFIT_PRIVATE_KEY')
 donor = accounts[0]
 
+
 #st.header("""This is a decentralized application that facilitates an ecosystem of donors, non-profits, and end users in the distribution of aid""")
 st.sidebar.title("Community Connect App")
 #st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
@@ -434,4 +435,3 @@ if page == 'View Fill Offers':
             block_chain_df.columns = columns
 
             st.write(block_chain_df)
-
