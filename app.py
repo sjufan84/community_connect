@@ -10,7 +10,7 @@ import singleton_requests
 #import ipfs
 import yfinance as yf
 
-# from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
+from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
 
 load_dotenv()
 
@@ -117,11 +117,14 @@ if page == 'Make a Donation':
             columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
             block_chain_df.columns = columns
 
-            #block_json_df = convert_df_to_json(block_chain_df)
-            #ipfs_hash = pin_json_to_ipfs(block_json_df)
+            block_json_df = convert_df_to_json(block_chain_df)
+            ipfs_hash = pin_json_to_ipfs(block_json_df)
+            tx_hash2 = contract.functions.updateIPFSHash(ipfs_hash).transact({
+                'from' : donor
+            })
             #returned_block_df = retrieve_block_df(ipfs_hash)
 
-            st.write(block_chain_df)
+            st.write(block_chain_df, ipfs_hash)
             st.balloons()
             #st.write(block_json_df, ipfs_hash, returned_block_df)
 
@@ -130,11 +133,10 @@ if page == 'Make a Donation':
 
 if page == 'Request for Goods':
     
-    st.header('Submit a Goods Request')
-    st.subheader('Please fill out request details below')
     goods_options = st.sidebar.radio('', options=['Submit a Goods Request', 'View Open Goods Request', 'View Fill Goods Offers', 'Pay Supplier Invoice'])
 
     if goods_options == 'Submit a Goods Request':
+        st.header('Submit a goods request below')
         with st.form("submitRequest", clear_on_submit=True):
             owner_address = st.selectbox('Select your address to submit request form', options = accounts[5:10])
             newName = st.text_input('What is the name of the product?')
@@ -191,11 +193,12 @@ if page == 'Request for Goods':
             st.markdown(f'**Name of Item Requested:**   {request[1]}')
             st.markdown(f'**Type of Product:**   {request[2]}')
             st.markdown(f'**Quantity of Product:**   {request[3]}')
+            st.markdown(f'**Request Status:**  {request[4]}')
 
             st.subheader('Supplier, please fill out form if you would like to fulfill this request')    
             supplier= st.selectbox(f'Supplier Address', [supplier_address])
             amount = st.number_input('Compensation requested')
-            invoiceNumber = st.number_input('Invoice Number')
+            invoiceNumber = st.number_input('Invoice Number', value=0)
 
             #supplier = st.text_input('Name')
             #type = st.text_input('Type')
@@ -256,16 +259,6 @@ if page == 'Request for Goods':
             st.markdown(f'**Type of Product:**   {request[4]}')
             st.markdown(f'**Quantity of Product:**   {request[5]}')
 
-            '''function approveFillOffer() public {
-            require(msg.sender == nonProfit, "You are not allowed to approve offers");
-            isApproved = true;
-            compensationApproved = compensationRequested;
-            approvedInvoiceNumber = invoiceNumber;
-            approvedSupplier = supplier;'''
-        
-
-            #supplier = st.text_input('Name')
-            #type = st.text_input('Type')
             nonce = w3.eth.get_transaction_count(nonprofit, 'latest')
             payload={'from': nonprofit, 'nonce': nonce, "gasPrice": w3.eth.gas_price}
             submitted = st.form_submit_button("Approve Offer")
