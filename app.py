@@ -534,4 +534,3 @@ if page == 'View Fill Offers':
             st.write(block_chain_df)
 
             st.write(f"**{eth:,.2f} ETHER** or **${usd_balance:,.2f} USD**.")
-
