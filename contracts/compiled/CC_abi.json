@@ -241,7 +241,7 @@
 		"constant": false,
 		"inputs": [
 			{
-				"name": "hash",
+				"name": "newHash",
 				"type": "string"
 			}
 		],

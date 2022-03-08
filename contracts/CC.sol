@@ -13,7 +13,7 @@ contract CommunityConnect {
     // holds the ETH address of the main customer
     address payable accountOwner;
     // holds account balance
-    uint public contractBalance;
+    uint256 public contractBalance;
     // address for approved supplier who fills the request
     address payable approvedSupplier;
     // request product info
@@ -38,7 +38,7 @@ contract CommunityConnect {
     //IPFS hash string
     string IPFSHash;
 
-    mapping(address => uint) balances;
+    mapping(address => uint256) balances;
 
     // adds ETH to smart contract.  include `payable` modifer so contract accepts ETH that gets sent to this function
     // Donors can send Eth to contract
@@ -135,11 +135,11 @@ contract CommunityConnect {
     }
 
 
-    function updateIPFSHash (string memory hash) public {
-        IPFSHash = hash;
+    function updateIPFSHash(string memory newHash) public {
+        IPFSHash = newHash;
     }
 
-    function getIPFSHash () view public returns (string memory) {
+    function getIPFSHash() view public returns (string memory) {
         return (IPFSHash);
     }
 
@@ -155,15 +155,7 @@ contract CommunityConnect {
         cashRequestStatus = "open";
     }
     */
-
-
-    // This function allows Users to make requests of cash to the contract
-    function requestCash(address payable, uint256 amount, string memory) public {
-        cashRequested = amount;
-
-    }
-    function viewCashRequest() view public returns (address, uint256, string memory) {
-
+    /*function viewCashRequest() view public returns (address, uint256, string memory) {
         return (cashRecipient, cashRequested, cashRequestStatus);
     }*/
 
