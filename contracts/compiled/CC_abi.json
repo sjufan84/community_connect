@@ -227,6 +227,11 @@
 				"internalType": "uint256",
 				"name": "invoiceNum",
 				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "received",
+				"type": "bool"
 			}
 		],
 		"name": "payInvoice",
@@ -260,6 +265,26 @@
 			}
 		],
 		"name": "registerRequest",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "requestCash",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",

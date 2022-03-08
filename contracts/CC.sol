@@ -132,14 +132,14 @@ contract CommunityConnect {
     }
 
     // This function allows the Nonprofit to pay the Supplier, I think we should change this to the Nonprofit sends the money but it comes from contract 
-    function payInvoice(uint256 invoiceNum) public payable {
+    function payInvoice(uint256 invoiceNum, bool received) public payable {
         // require(recipient == approvedSupplier, "This address is not authorized to receive compensation!");
         // do we need this?
         // require(isOffer == true, "Offer to fill does not exist!");
         require (invoiceNum == approvedInvoiceNumber, "This invoice number has not been approved");
         require(msg.sender == nonProfit, "You are not authorized to pay invoices");
         require (isApproved == true, "Fill offer has not been approved!");
-        require(isReceived == true, "Order has not been received!");
+        require(received == true, "Order has not been received!");
         require(compensationApproved <= address(this).balance, "Not enough money in contract to pay supplier");
         approvedSupplier.transfer(compensationRequested);
         contractBalance -= compensationApproved;
@@ -158,14 +158,13 @@ contract CommunityConnect {
         cashRequestStatus = "open";
     }
     */
-
     // This function allows Users to make requests of cash to the contract
-    function requestCash(address payable, uint256 amount, string memory) public {
+    function requestCash(address payable, uint256 amount) public {
         cashRequested = amount;
 
     }
     function viewCashRequest() view public returns (address, uint256, string memory) {
-        return (cashRecipient, cashRequested, cashRequestStatus);
+        return (authorizedRecipient, cashRequested, cashRequestStatus);
     }
 
     function fillCashRequest(address payable recipient, uint256 amount) public {
