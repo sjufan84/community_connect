@@ -152,12 +152,8 @@ contract CommunityConnect {
         cashRecipient = msg.sender;
         cashRequested = cashAmount;
         cashRequestStatus = "open";
-    }    */
-    function viewCashRequest() view public returns (address, uint256, string memory) {
-        return (cashRecipient, cashRequested, cashRequestStatus);
-    }
-
-
+    }    
+    
     /*function fillCashRequest(address payable recipient, uint256 amount) public {
         require (msg.sender == nonProfit, "You are not authorized to send cash");
         require (recipient == cashRecipient, "This recipient has not requested cash assistance");
