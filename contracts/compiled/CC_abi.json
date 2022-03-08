@@ -300,6 +300,7 @@
 		"name": "viewRequest",
 		"outputs": [
 			{
+
 				"internalType": "address",
 				"name": "",
 				"type": "address"
@@ -322,6 +323,9 @@
 			{
 				"internalType": "string",
 				"name": "",
+
+				"name": "newHash",
+
 				"type": "string"
 			}
 		],
