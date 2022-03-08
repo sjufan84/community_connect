@@ -20,8 +20,9 @@ contract CommunityConnect {
     string productName;
     string productType;
     uint256 productCount;
+    string requestStatus;
     // cash request info
-    address payable cashRecipient;
+    //address payable cashRecipient;
     uint256 cashRequested;
     // invoice data
     uint256 invoiceNumber;
@@ -31,7 +32,7 @@ contract CommunityConnect {
     //booleans
     bool isOffer = false;
     bool isApproved = false;
-    bool isReceived = false;
+    //bool isReceived = false;
     bool invoicePaid = false;
     bool cashRequestedStatus = false;
 
@@ -43,17 +44,11 @@ contract CommunityConnect {
         require(msg.value == donation);
         contractBalance = address(this).balance;
     }
-    
-    // This function allows anyone to check the balance of any address
-    function getBalance(address recipient) public view returns(uint256) {
-        //return balances[recipient];
-        return address(recipient).balance;
-    }
-    
+  
     // This function allows view of info
-    function getInfo() view public returns(address, address payable, uint) {
+    /*function getInfo() view public returns(address, address payable, uint) {
         return (nonProfit, authorizedRecipient, contractBalance);
-    }
+    }*/
     
     // This function allows Users to make requests to the contract
     function registerRequest(address payable newAccountOwner, string memory newName, string memory newProductType, uint256 newProductCount) public {
@@ -61,24 +56,19 @@ contract CommunityConnect {
         productName = newName;
         productType = newProductType;
         productCount = newProductCount;
+        requestStatus = "Open";
     }
     
     // This function allows Suppliers to see the requests made by Users
-    function viewRequest() view public returns(address, string memory, string memory, uint256) {
-        return (accountOwner, productName, productType, productCount);
+    function viewRequest() view public returns(address, string memory, string memory, uint256, string memory) {
+        return (accountOwner, productName, productType, productCount, requestStatus);
     }
 
     
-    // This function allows the supplier to agree to fill the order and send an amount to be paid for goods rendered
-    // Is this necessary?
-    function fillInvoice(address, uint256, bool ) public {
-        require(isOffer=true && msg.sender == supplier);
-    }
-
     // Just viewing the offer status of a request
-    function getOfferStatus() view public returns(bool) {
+    /*function getOfferStatus() view public returns(bool) {
         return isOffer;
-    }
+    }*/
     
     // This function is a check for Suppliers to call when they agree to fill the request
     function fillRequest(address payable newSupplier, uint256 compensation, uint256 newInvoiceNumber) public returns(address, uint256, uint256) {
@@ -86,6 +76,7 @@ contract CommunityConnect {
         supplier = newSupplier;
         compensationRequested = compensation;
         invoiceNumber = newInvoiceNumber;
+        requestStatus = "Fill Offered";
 
         return(supplier, compensationRequested, invoiceNumber);
     }
@@ -103,6 +94,7 @@ contract CommunityConnect {
         compensationApproved = compensationRequested;
         approvedInvoiceNumber = invoiceNumber;
         approvedSupplier = supplier;
+        requestStatus = "Fill Approved";
     }
 
     // This function allows the Nonprofit to see the invoice Suppliers have sent
@@ -111,15 +103,15 @@ contract CommunityConnect {
     }
     
     // user signifies they received the goods/service
-    function userReceived() public {
+    /*function userReceived() public {
         require (msg.sender == accountOwner || msg.sender == nonProfit, "You are not approved to receive this order");
         isReceived=true;
-    }
+    }*/
     
     // view received status 
-    function getReceivedStatus() view public returns(bool) {
+    /*function getReceivedStatus() view public returns(bool) {
         return isReceived;
-    }
+    }*/
 
     // This function allows the Nonprofit to pay the Supplier, I think we should change this to the Nonprofit sends the money but it comes from contract 
     function payInvoice(uint256 invoiceNum, bool received) public payable {
@@ -131,10 +123,20 @@ contract CommunityConnect {
         approvedSupplier.transfer(compensationRequested);
         contractBalance -= compensationApproved;
         invoicePaid = true;
+        requestStatus = "Request Filled";
+    }
+
+
+    function update IPFSHash (string memory hash) public {
+        IPFSHash = hash;
+    }
+
+    function getIPFSHash () view public returns (string memory) {
+        return (IPFSHash);
     }
 
     // viewer function to see invoice payment status
-    function getPaidStatus() view public returns (bool) {
+    /*function getPaidStatus() view public returns (bool) {
         return invoicePaid;
     }
     
