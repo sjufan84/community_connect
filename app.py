@@ -134,10 +134,10 @@ if page == 'Make a Donation':
 
 if page == 'Request for Goods':
     
-    st.header('Submit a Goods Request')
-    goods_options = st.sidebar.radio('', options=['Submit a Goods Request', 'View Open Goods Request', 'View Fill Goods Offers', 'Pay Supplier Invoice'])
+    #st.subheader('Submit a Goods Request')
+    goods_options = st.sidebar.radio('', options=['1 - Submit a Goods Request', '2 - View Open Goods Request', '3 - View Fill Goods Offers', '4 - Pay Supplier Invoice'])
 
-    if goods_options == 'Submit a Goods Request':
+    if goods_options == '1 - Submit a Goods Request':
         st.subheader('Please fill out request details below')
         with st.form("submitRequest", clear_on_submit=True):
             owner_address = st.selectbox('Select your address to submit request form', options = accounts[5:10])
@@ -183,6 +183,10 @@ if page == 'Request for Goods':
                 block_chain_df.columns = columns
                 block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
+
+                st.write(block_chain_df)
+                st.write("Thank you!  Your request is pending supplier confirmation!")
+
                 ipfsHash = contract.functions.getIPFSHash().call()
                 ipfs_df = retrieve_block_df(ipfsHash)
                 new_df = pd.concat([ipfs_df, block_chain_df]) 
@@ -197,7 +201,8 @@ if page == 'Request for Goods':
 
                 st.write(block_chain_df, new_df)
 
-    if goods_options == 'View Open Goods Request':
+
+    if goods_options == '2 - View Open Goods Request':
         st.subheader('Supplier, please fill out form if you would like to fulfill this request')     
         with st.form('fillRequest', clear_on_submit=True):    
             request = contract.functions.viewRequest().call()
@@ -263,11 +268,11 @@ if page == 'Request for Goods':
 
                 st.write(block_chain_df, new_df)
                     
-                st.subheader("Offer with Community Connect for Approval")
+                st.write("Offer with Community Connect for Review & Approval")
 
-    if goods_options == 'View Fill Goods Offers':
+    if goods_options == '3 - View Fill Goods Offers':
         
-        st.subheader("Community Connect to Review and Approve Supplier's Offer to Fulfill Request")  
+        st.subheader("Community Connect, please review & approve supplier's offer to fulfill request")  
         with st.form('fillRequest', clear_on_submit=True):    
 
             request = contract.functions.viewFillOffer().call()
@@ -324,9 +329,10 @@ if page == 'Request for Goods':
                 newReturnedHash = contract.functions.getIPFSHash().call()
 
                 st.write(block_chain_df)
+                st.write("Great! This order will be prepped and sent to requestor!")
 
 
-    if goods_options == 'Pay Supplier Invoice':
+    if goods_options == '4 - Pay Supplier Invoice':
         
         st.subheader('Goods Received and Invoice Approved to be Paid to Supplier')
         with st.form("payInvoice", clear_on_submit=True):
@@ -382,7 +388,7 @@ if page == 'Request for Goods':
                 newReturnedHash = contract.functions.getIPFSHash().call()
 
                 st.write(block_chain_df)
-                st.write(f"Goods Request submission for **Invoice {invoiceNum}** has been fulfilled.")
+                st.write(f"Good News! Request submission for **Invoice {invoiceNum}** has been received from requestor and invoice paid to supplier!")
                 st.balloons()
 
 if page == 'Pay Invoice':
@@ -449,20 +455,20 @@ if page == 'Pay Invoice':
 if page == 'Request for Cash Assistance':
 
     st.header('Request for Cash Assistance')
-    cash_options = st.sidebar.radio('', options=['Submit Request for Cash', 'Review Cash Request'])
+    cash_options = st.sidebar.radio('', options=['1 - Submit Request for Cash', '2 - Review Cash Request'])
 
-    if cash_options == 'Submit Request for Cash':
+    if cash_options == '1 - Submit Request for Cash':
         with st.form("cash request", clear_on_submit=True):
 
             recipient = st.selectbox('Provide Your Public Address', options=accounts[5:10])  # Currently only first hash listed is the only authorizedRecipient in our smart contract
             amount = st.number_input('Provide Amount Needed')
-            int_amount = int(amount)
-            address = st.multiselect('Your request will be fulfilled by:', [nonprofit])
+            amount = int(amount)
+            address = st.selectbox('Your request will be fulfilled by:', [nonprofit])
 
             submitted = st.form_submit_button("Request for Cash Assistance")
             if submitted:
-                tx_hash = contract.functions.requestCash(int_amount, recipient, nonprofit).transact({
-                    'from': nonprofit,
+                tx_hash = contract.functions.requestCash(amount).transact({
+                    'from': recipient,
                 })
                 # Display the information on the webpage
                 receipt = w3.eth.waitForTransactionReceipt(tx_hash)
@@ -504,7 +510,7 @@ if page == 'Request for Cash Assistance':
 
                 st.write(block_chain_df, new_df)
 
-    if cash_options == 'Review Cash Request':
+    if cash_options == '2 - Review Cash Request':
         
         st.subheader("Open Cash Request Sent for Approval")
         with st.form("viewCashInvoice", clear_on_submit=True):
@@ -515,7 +521,7 @@ if page == 'Request for Cash Assistance':
             
             submitted = st.form_submit_button("Approve Cash Request")
             if submitted:
-                tx_hash = contract.functions.sendCash(int_amount).transact({
+                tx_hash = contract.functions.sendCash(request[1], request[0], nonprofit).transact({
                     'from': nonprofit,
                 })
 
