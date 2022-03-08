@@ -10,7 +10,7 @@ import singleton_requests
 #import ipfs
 import yfinance as yf
 
-from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df
+from ipfs import convert_df_to_json, pin_json_to_ipfs, retrieve_block_df, updateIPFS_df
 
 load_dotenv()
 
@@ -115,18 +115,12 @@ if page == 'Make a Donation':
             columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
             block_chain_df.columns = columns
             block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
-
-            ipfsHash = contract.functions.getIPFSHash().call()
-            ipfs_df = retrieve_block_df(ipfsHash)
-            ipfs_df['Contract Balance'] = ipfs_df['Contract Balance'].astype('int64')
-            new_df = pd.concat([ipfs_df, block_chain_df]) 
-            new_json_df = convert_df_to_json(new_df)
-            newHash = pin_json_to_ipfs(new_json_df)
-
-            tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
-            'from': donor,
-            })
-            newReturnedHash = contract.functions.getIPFSHash().call()
+            
+            # Utilizes the updateIPFS_df function from ipfs.py to concat running ledger
+            # that lives on IPFS with the new block and then updates the new hash that is 
+            # generated in the contract... this is repeated throughout the app script
+            
+            new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
 
             st.write(block_chain_df, new_df)
             st.balloons()
@@ -183,25 +177,12 @@ if page == 'Request for Goods':
                 block_chain_df.columns = columns
                 block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
-
-                st.write(block_chain_df)
-                st.write("Thank you!  Your request is pending supplier confirmation!")
-
-                ipfsHash = contract.functions.getIPFSHash().call()
-                ipfs_df = retrieve_block_df(ipfsHash)
-                new_df = pd.concat([ipfs_df, block_chain_df]) 
-                new_json_df = convert_df_to_json(new_df)
-                newHash = pin_json_to_ipfs(new_json_df)
-
-                tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
-                'from': nonprofit,
-                })
-                newReturnedHash = contract.functions.getIPFSHash().call()
-
+                new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
 
                 st.write(block_chain_df, new_df)
+                st.write("Thank you!  Your request is pending supplier confirmation!")
 
-
+                
     if goods_options == '2 - View Open Goods Request':
         st.subheader('Supplier, please fill out form if you would like to fulfill this request')     
         with st.form('fillRequest', clear_on_submit=True):    
@@ -254,17 +235,7 @@ if page == 'Request for Goods':
                 block_chain_df.columns = columns
                 block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
-                ipfsHash = contract.functions.getIPFSHash().call()
-                ipfs_df = retrieve_block_df(ipfsHash)
-                new_df = pd.concat([ipfs_df, block_chain_df]) 
-                new_json_df = convert_df_to_json(new_df)
-                newHash = pin_json_to_ipfs(new_json_df)
-
-                tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
-                'from': nonprofit,
-                })
-                newReturnedHash = contract.functions.getIPFSHash().call()
-
+                new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
 
                 st.write(block_chain_df, new_df)
                     
@@ -317,18 +288,9 @@ if page == 'Request for Goods':
                 block_chain_df.columns = columns
                 block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
-                ipfsHash = contract.functions.getIPFSHash().call()
-                ipfs_df = retrieve_block_df(ipfsHash)
-                new_df = pd.concat([ipfs_df, block_chain_df]) 
-                new_json_df = convert_df_to_json(new_df)
-                newHash = pin_json_to_ipfs(new_json_df)
-
-                tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
-                'from': nonprofit,
-                })
-                newReturnedHash = contract.functions.getIPFSHash().call()
-
-                st.write(block_chain_df)
+                new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
+                
+                st.write(block_chain_df, new_df)
                 st.write("Great! This order will be prepped and sent to requestor!")
 
 
@@ -376,18 +338,9 @@ if page == 'Request for Goods':
                 block_chain_df.columns = columns
                 block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
-                ipfsHash = contract.functions.getIPFSHash().call()
-                ipfs_df = retrieve_block_df(ipfsHash)
-                new_df = pd.concat([ipfs_df, block_chain_df]) 
-                new_json_df = convert_df_to_json(new_df)
-                newHash = pin_json_to_ipfs(new_json_df)
+                new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
 
-                tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
-                'from': nonprofit,
-                })
-                newReturnedHash = contract.functions.getIPFSHash().call()
-
-                st.write(block_chain_df)
+                st.write(block_chain_df, new_df)
                 st.write(f"Good News! Request submission for **Invoice {invoiceNum}** has been received from requestor and invoice paid to supplier!")
                 st.balloons()
 
@@ -437,16 +390,7 @@ if page == 'Pay Invoice':
             block_chain_df.columns = columns
             block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
-            ipfsHash = contract.functions.getIPFSHash().call()
-            ipfs_df = retrieve_block_df(ipfsHash)
-            new_df = pd.concat([ipfs_df, block_chain_df]) 
-            new_json_df = convert_df_to_json(new_df)
-            newHash = pin_json_to_ipfs(new_json_df)
-
-            tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
-                'from': nonprofit,
-                })
-            newReturnedHash = contract.functions.getIPFSHash().call()
+            new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
 
             st.write(block_chain_df, new_df)
                 
@@ -491,22 +435,11 @@ if page == 'Request for Cash Assistance':
                 # st.write(block_chain)
                 block_chain_df = pd.DataFrame.from_dict(block_chain)
 
-                
-
                 columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
                 block_chain_df.columns = columns
                 block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
-                ipfsHash = contract.functions.getIPFSHash().call()
-                ipfs_df = retrieve_block_df(ipfsHash)
-                new_df = pd.concat([ipfs_df, block_chain_df]) 
-                new_json_df = convert_df_to_json(new_df)
-                newHash = pin_json_to_ipfs(new_json_df)
-
-                tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
-                'from': nonprofit,
-                })
-                newReturnedHash = contract.functions.getIPFSHash().call()
+                new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
 
                 st.write(block_chain_df, new_df)
 
@@ -550,16 +483,7 @@ if page == 'Request for Cash Assistance':
                 block_chain_df.columns = columns
                 block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
-                ipfsHash = contract.functions.getIPFSHash().call()
-                ipfs_df = retrieve_block_df(ipfsHash)
-                new_df = pd.concat([ipfs_df, block_chain_df]) 
-                new_json_df = convert_df_to_json(new_df)
-                newHash = pin_json_to_ipfs(new_json_df)
-
-                tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
-                'from': nonprofit,
-                })
-                newReturnedHash = contract.functions.getIPFSHash().call()
+                new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
 
                 st.write(block_chain_df, new_df)
 
@@ -632,16 +556,7 @@ if page == 'View Fill Offers':
             block_chain_df.columns = columns
             block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
-            ipfsHash = contract.functions.getIPFSHash().call()
-            ipfs_df = retrieve_block_df(ipfsHash)
-            new_df = pd.concat([ipfs_df, block_chain_df]) 
-            new_json_df = convert_df_to_json(new_df)
-            newHash = pin_json_to_ipfs(new_json_df)
-
-            tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
-                'from': nonprofit,
-                })
-            newReturnedHash = contract.functions.getIPFSHash().call()
+            new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
 
             st.write(block_chain_df, new_df)
 
