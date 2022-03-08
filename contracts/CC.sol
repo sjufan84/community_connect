@@ -136,7 +136,7 @@ contract CommunityConnect {
     }
 
     // viewer function to see invoice payment status
-    /*function getPaidStatus() view public returns (bool) {
+    function getPaidStatus() view public returns (bool) {
         return invoicePaid;
     }
     
