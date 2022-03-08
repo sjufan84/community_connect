@@ -42,14 +42,17 @@ def updateIPFS_df(contract, newBlock_df, sender):
         new_df = pd.concat([ipfs_df, newBlock_df]) 
         new_json_df = convert_df_to_json(new_df)
         newHash = pin_json_to_ipfs(new_json_df)
+        tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
+            'from': sender,
+        })
     else:
         new_json_df = convert_df_to_json(newBlock_df)
         newHash = pin_json_to_ipfs(new_json_df)
-
+        ipfs_df = newBlock_df
         tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
             'from': sender,
         })
 
-    return new_df
+    return ipfs_df
 
 
