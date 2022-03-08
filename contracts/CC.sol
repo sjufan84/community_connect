@@ -22,9 +22,9 @@ contract CommunityConnect {
     uint256 productCount;
     string requestStatus;
     // cash request info
-    //address payable cashRecipient;
+    address payable cashRecipient;
     uint256 cashRequested;
-    //string cashRequestStatus;
+    string cashRequestStatus;
     // invoice data
     uint256 invoiceNumber;
     uint256 compensationRequested;
@@ -147,26 +147,13 @@ contract CommunityConnect {
     /*function getPaidStatus() view public returns (bool) {
         return invoicePaid;
     }*/
-    /* Use sendRemittance function
-    #function requestCash(uint cashAmount) public {
+    function requestCash(uint cashAmount) public {
         require (msg.sender == authorizedRecipient, "You are not authorized to receive cash");
         cashRecipient = msg.sender;
         cashRequested = cashAmount;
         cashRequestStatus = "open";
     }
-    */
-
-
-    // This function allows Users to make requests of cash to the contract
-    function requestCash(address payable, uint256 amount, string memory) public {
-        cashRequested = amount;
-
-    }
-    function viewCashRequest() view public returns (address, uint256, string memory) {
-
-        return (cashRecipient, cashRequested, cashRequestStatus);
-    }*/
-
+ 
     /*function fillCashRequest(address payable recipient, uint256 amount) public {
         require (msg.sender == nonProfit, "You are not authorized to send cash");
         require (recipient == cashRecipient, "This recipient has not requested cash assistance");
@@ -176,6 +163,10 @@ contract CommunityConnect {
         contractBalance -= amount;
         cashRequestStatus = "complete";
     }*/
+
+    function viewCashRequest() view public returns (address, uint256, string memory) {
+        return (cashRecipient, cashRequested, cashRequestStatus);
+    }
 
     // This function allows the nonprofit to send cash assistance to users
     function sendCash(uint value, address payable recipient, address sender) public {
