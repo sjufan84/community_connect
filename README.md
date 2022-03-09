@@ -13,7 +13,7 @@ This dApp was developed with Python, Solidity and the following packages and lib
 - Pandas
 - Json
 
-Community Connect was tested with Ganache and Metamask to simulate characteristics of a blockchain. 
+Community Connect was tested with Ganache and Metamask to simulate characteristics of a blockchain. We have also used IPFS to store all blockchain transactions. 
 
 What is Ganache?
 
@@ -24,6 +24,11 @@ What is Metamask?
 
 MetaMask is the easiest way to interact with dapps in a browser. It is an extension for Chrome or Firefox that connects to an Ethereum network without running a full node on the browser's machine. It can connect to the main Ethereum network, any of the testnets (Ropsten, Kovan, and Rinkeby), or a local blockchain such as the one created by Ganache or Truffle Develop.
 To install Metamask please see this link: [MetaMask](https://metamask.io/download/) and select your OS.
+
+What is IPFS?
+
+The InterPlanetary File System is a protocol and peer-to-peer network for storing and sharing data in a distributed file system. IPFS uses content-addressing to uniquely identify each file in a global namespace connecting all computing devices.
+
 
 ## Installation Guide
 
@@ -47,7 +52,7 @@ Community Connect web app requires a few installations before launching. If the 
 
 ``` pip install plotly ```
 
-To simulate a Local Blockchain please download 
+
 ## Requirements
 Create a `.env` file
 * Specify the address that the Web3 provider will use for the local `Ganache` blockchain.
@@ -56,8 +61,16 @@ Create a `.env` file
 * Specify the address of the deployed contract.  You can find this address in the Remix IDE when displaying the deployed contract.  See example below.
 `SMART_CONTRACT_ADDRESS='<YOUR_DEPLOYED_CONTRACT_ADDRESS_HERE>'`
 
-* 
+* Specify your Pinata API key and Secret API key.
+`PINATA_API_KEY='<YOUR_API_KEY_HERE>'`
+`PINATA_SECRET_API_KEY='<YOUR_SECRET_API_KEY_HERE>'`
+
+* Specify your Mapbox Acess token.
+`MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic2p1ZmFuODQiLCJhIjoiY2wwYnBhencyMGxuMzNrbWkwZDBnNmV5MyJ9.03YEXe8EP_0JTE125vGCmA'`
+
 ## Usage
+
+To use this dApp, 
 
 ## Contributors
 
