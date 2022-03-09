@@ -170,36 +170,14 @@
 			{
 				"name": "",
 				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
 			}
 		],
 		"payable": false,
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "newAccountOwner",
-				"type": "address"
-			},
-			{
-				"name": "newName",
-				"type": "string"
-			},
-			{
-				"name": "newProductType",
-				"type": "string"
-			},
-			{
-				"name": "newProductCount",
-				"type": "uint256"
-			}
-		],
-		"name": "registerRequest",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -237,6 +215,36 @@
 		"outputs": [],
 		"payable": true,
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "newAccountOwner",
+				"type": "address"
+			},
+			{
+				"name": "newName",
+				"type": "string"
+			},
+			{
+				"name": "newProductType",
+				"type": "string"
+			},
+			{
+				"name": "newProductCount",
+				"type": "uint256"
+			},
+			{
+				"name": "newRequestLocation",
+				"type": "string"
+			}
+		],
+		"name": "registerRequest",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
