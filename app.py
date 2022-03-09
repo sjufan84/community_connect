@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 import singleton_requests
-#import ipfs
 import yfinance as yf
 import requests
 
