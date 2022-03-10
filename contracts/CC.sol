@@ -175,7 +175,7 @@ contract CommunityConnect {
         require(received == true, "Order has not been received!");
         require(compensationApproved <= address(this).balance, "Not enough money in contract to pay supplier");
         approvedSupplier.transfer(compensationRequested);
-        contractBalance -= compensationApproved;
+        contractBalance = contractBalance.sub(compensationApproved);
         invoicePaid = true;
         requestStatus = "Request Filled";
     }
@@ -195,6 +195,7 @@ contract CommunityConnect {
     }*/
     function requestCash(uint cashAmount) public {
         require (msg.sender == authorizedRecipient, "You are not authorized to receive cash");
+        require(cashAmount <= address(this).balance);
         cashRecipient = msg.sender;
         cashRequested = cashAmount;
         cashRequestStatus = "open";
@@ -217,8 +218,9 @@ contract CommunityConnect {
     // This function allows the nonprofit to send cash assistance to users
     function sendCash(uint value, address payable recipient, address sender) public {
         require(sender == nonProfit && recipient == authorizedRecipient, "The recipient address is not authorized!");
+        require(value <= address(this).balance, " The Non-Profit does not have the available funds at this time!");
         recipient.transfer(value);
-        contractBalance = address(this).balance;
+        //contractBalance = address(this).balance;
     }    
     
     // accepts ETH even if it gets sent without using the `deposit` function
