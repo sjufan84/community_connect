@@ -16,11 +16,13 @@ contract CommunityConnect {
     uint256 public contractBalance;
     // address for approved supplier who fills the request
     address payable approvedSupplier;
+    string supplierLocation;
     // request product info
     string productName;
     string productType;
     uint256 productCount;
     string requestStatus;
+    string requestLocation;
     // cash request info
     address payable cashRecipient;
     uint256 cashRequested;
@@ -53,17 +55,37 @@ contract CommunityConnect {
     }*/
     
     // This function allows Users to make requests to the contract
-    function registerRequest(address payable newAccountOwner, string memory newName, string memory newProductType, uint256 newProductCount) public {
+    function registerRequest(address payable newAccountOwner, 
+        string memory newName, 
+        string memory newProductType, 
+        uint256 newProductCount,
+        string memory newRequestLocation
+        ) public {
         accountOwner = newAccountOwner;
         productName = newName;
         productType = newProductType;
         productCount = newProductCount;
+        requestLocation=newRequestLocation;
         requestStatus = "Open";
     }
     
     // This function allows Suppliers to see the requests made by Users
-    function viewRequest() view public returns(address, string memory, string memory, uint256, string memory) {
-        return (accountOwner, productName, productType, productCount, requestStatus);
+    function viewRequest() view public returns ( 
+            address, 
+            string memory, 
+            string memory, 
+            uint256, 
+            string memory,
+            string memory
+        ) {
+        return (
+            accountOwner, 
+            productName, 
+            productType, 
+            productCount, 
+            requestLocation,
+            requestStatus 
+        );
     }
 
     
@@ -73,20 +95,44 @@ contract CommunityConnect {
     }*/
     
     // This function is a check for Suppliers to call when they agree to fill the request
-    function fillRequest(address payable newSupplier, uint256 compensation, uint256 newInvoiceNumber) public returns(address, uint256, uint256) {
-        isOffer = true;
-        supplier = newSupplier;
-        compensationRequested = compensation;
-        invoiceNumber = newInvoiceNumber;
-        requestStatus = "Fill Offered";
+    function fillRequest(
+            address payable newSupplier, 
+            uint256 compensation, 
+            uint256 newInvoiceNumber
+            //string memory newSupplierLocation
+        ) public returns (
+            address, 
+            uint256, 
+            uint256
+        ) {
+            isOffer = true;
+            supplier = newSupplier;
+            compensationRequested = compensation;
+            invoiceNumber = newInvoiceNumber;
+            requestStatus = "Fill Offered";
+            //supplierLocation = newSupplierLocation;
 
         return(supplier, compensationRequested, invoiceNumber);
     }
     
     // Users can view request fill offers
-    function viewFillOffer() view public returns (address, uint256, uint256, string memory, string memory, uint256) {
-        require(isOffer == true, "No fill offers to view");
-        return (supplier, compensationRequested, invoiceNumber, productName, productType, productCount);
+    function viewFillOffer() view public returns (
+            address, 
+            uint256, 
+            uint256, 
+            string memory, 
+            string memory, 
+            uint256
+        ) {
+            require (isOffer == true, "No fill offers to view");
+        return (
+            supplier, 
+            compensationRequested, 
+            invoiceNumber, 
+            productName, 
+            productType, 
+            productCount
+        );
     }
 
     // non-profit can approve fillOffer here
@@ -152,12 +198,8 @@ contract CommunityConnect {
         cashRecipient = msg.sender;
         cashRequested = cashAmount;
         cashRequestStatus = "open";
-    }    */
-    function viewCashRequest() view public returns (address, uint256, string memory) {
-        return (cashRecipient, cashRequested, cashRequestStatus);
-    }
-
-
+    }    
+    
     /*function fillCashRequest(address payable recipient, uint256 amount) public {
         require (msg.sender == nonProfit, "You are not authorized to send cash");
         require (recipient == cashRecipient, "This recipient has not requested cash assistance");

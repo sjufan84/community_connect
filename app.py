@@ -126,6 +126,7 @@ if page == 'Make a Donation':
             
             new_df = updateIPFS_df(contract, block_chain_ipfs_df, nonprofit)
 
+
             st.write(block_chain_df)
             st.balloons()
 
@@ -287,6 +288,7 @@ if page == 'Request for Goods':
 
                 new_df = updateIPFS_df(contract, block_chain_ipfs_df, nonprofit)
 
+
                 request = contract.functions.viewRequest().call()
                 requestLocation = f'{request[4]}'
                 endpoint = "mapbox.places" 
@@ -350,11 +352,12 @@ if page == 'Request for Goods':
 
                 columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
                 block_chain_df.columns = columns
+
                 block_chain_ipfs_df = block_chain_df
                 block_chain_ipfs_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
                 new_df = updateIPFS_df(contract, block_chain_ipfs_df, nonprofit)
-                
+           
                 st.write(block_chain_df)
                 st.write("Great! This order will be prepped and sent to requestor!")
 
@@ -559,6 +562,7 @@ if page == 'Request for Cash Assistance':
                 st.balloons()
                 st.write("")
 
+
 if page == 'Get Balances':
     st.header('Get Balances')
     # getBalance function and app.py
@@ -630,6 +634,7 @@ if page == 'View Fill Offers':
             block_chain_ipfs_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('int64')
 
             new_df = updateIPFS_df(contract, block_chain_ipfs_df, nonprofit)
+
 
             st.write(block_chain_df)
 
