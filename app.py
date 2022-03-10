@@ -65,12 +65,25 @@ st.sidebar.title("Community Connect App")
 #st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
 
 st.sidebar.subheader("How Can We Help?")
-page = st.sidebar.radio('', options=['Make a Donation', 'Request for Goods', 'Request for Cash Assistance', 'Get Balances', 'View Contract Ledger'])
+page = st.sidebar.radio('', options=['Currency Converter','Make a Donation', 'Request for Goods', 'Request for Cash Assistance', 'Get Balances', 'View Contract Ledger'])
 st.sidebar.markdown("""---""")
 
 # Dependending on which button is selected on the sidebar, the user will see a different ui and be able to interact with the contract
 # in different ways
 block_chain_df = pd.DataFrame()
+
+if page == 'Currency Converter':
+    with st.form('converter', clear_on_submit = True):
+        st.header('Currency Converter')
+        eth_df = yf.download(tickers="ETH-USD",period="today")
+        eth_usd = eth_df.iloc[0]["Close"]
+        dollars = st.number_input('Enter the amount of USD to convert to ether and wei:', value = 0.00)
+        to_ether = float(dollars) / float(eth_usd)
+        to_wei = w3.toWei(to_ether, 'ether')
+        submitted = st.form_submit_button('Convert')
+        if submitted:
+            st.markdown(f'**${dollars:,.2f} USD is equal to {to_wei} wei**')
+            st.markdown(f'**${dollars:,.2f} USD is equal to {to_ether:,.2f} ether**')
 
 if page == 'Make a Donation':
 
@@ -522,12 +535,11 @@ if page == 'Request for Cash Assistance':
             request = contract.functions.viewCashRequest().call()
             st.markdown(f'**Requestor Address:**   {request[0]}')
             st.markdown(f'**Amount Requested:**   {request[1]}')
-            
+
             submitted = st.form_submit_button("Approve Cash Request")
             if submitted:
                 tx_hash = contract.functions.sendCash(request[1], request[0], nonprofit).transact({
-                    'from': nonprofit,
-                    #'to': request[0]
+                    'from': nonprofit
                 })
 
                 # Display the information on the webpage
@@ -560,7 +572,7 @@ if page == 'Request for Cash Assistance':
 
                 st.write(block_chain_df)
                 st.balloons()
-                st.write("")
+                st.write("Good News!  Cash is on the way!")
 
 
 if page == 'Get Balances':
