@@ -146,8 +146,6 @@ contract CommunityConnect {
     }
 
 
-    
-
     // This function allows the Nonprofit to see the invoice Suppliers have sent
     function viewApprovedInvoice() view public returns(address, uint256, uint256) {
         return (approvedSupplier, compensationApproved, approvedInvoiceNumber);
@@ -201,16 +199,7 @@ contract CommunityConnect {
         cashRequestStatus = "open";
     }    
     
-    /*function fillCashRequest(address payable recipient, uint256 amount) public {
-        require (msg.sender == nonProfit, "You are not authorized to send cash");
-        require (recipient == cashRecipient, "This recipient has not requested cash assistance");
-        require (amount == cashRequested, "The amount you are trying to send is different than the one requested");
-        require (amount <= address(this).balance, "Not enough money in contract to fill this request");
-        recipient.transfer(amount);
-        contractBalance -= amount;
-        cashRequestStatus = "complete";
-    }*/
-
+    
     function viewCashRequest() view public returns (address, uint256, string memory) {
         return (cashRecipient, cashRequested, cashRequestStatus);
     }
@@ -226,11 +215,3 @@ contract CommunityConnect {
     // accepts ETH even if it gets sent without using the `deposit` function
     function() external payable {}
 }
-// Flow of Operations
-// User enters there request with registerRequest
-
-// Supplier can see there request with viewRequest call
-// Supplier agrees to fill Request with fillRequest(bool), then enters inputs to sendInvoice function
-// Nonprofit can view the invoice with viewInvoice call
-// Nonprofit can see the suppliers invoice, check to see if the amount in invoice == amount in viewRequest, check to see if user received the goods with getReceivedStatus
-// Nonprofit sends compensation that equals the amount in invoice
