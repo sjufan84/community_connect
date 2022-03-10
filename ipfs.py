@@ -38,8 +38,9 @@ def updateIPFS_df(contract, newBlock_df, sender):
     ipfsHash = contract.functions.getIPFSHash().call()
     if ipfsHash != '':
         ipfs_df = retrieve_block_df(ipfsHash)
-        ipfs_df['Contract Balance'] = ipfs_df['Contract Balance'].astype('int64')
-        new_df = pd.concat([ipfs_df, newBlock_df]) 
+        ipfs_df['Contract Balance'] = ipfs_df['Contract Balance'].astype('str')
+        new_df = pd.concat([newBlock_df,ipfs_df])
+        new_df = new_df[~new_df.index.duplicated(keep='first')]
         new_json_df = convert_df_to_json(new_df)
         newHash = pin_json_to_ipfs(new_json_df)
         tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
@@ -48,11 +49,11 @@ def updateIPFS_df(contract, newBlock_df, sender):
     else:
         new_json_df = convert_df_to_json(newBlock_df)
         newHash = pin_json_to_ipfs(new_json_df)
-        ipfs_df = newBlock_df
+        new_df = newBlock_df
         tx_hash2 = contract.functions.updateIPFSHash(newHash).transact({
             'from': sender,
         })
 
-    return ipfs_df
+    return new_df
 
 
