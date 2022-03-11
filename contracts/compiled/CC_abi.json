@@ -40,6 +40,20 @@
 		"type": "function"
 	},
 	{
+		"constant": true,
+		"inputs": [],
+		"name": "getIPFSHash",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"constant": false,
 		"inputs": [
 			{
@@ -104,36 +118,36 @@
 				"type": "address"
 			},
 			{
-				"name": "amount",
+				"name": "cashAmount",
 				"type": "uint256"
 			}
 		],
-		"name": "fillCashRequest",
+		"name": "requestCash",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [],
-		"name": "getInfo",
-		"outputs": [
+		"constant": false,
+		"inputs": [
 			{
-				"name": "",
-				"type": "address"
-			},
-			{
-				"name": "",
-				"type": "address"
-			},
-			{
-				"name": "",
+				"name": "value",
 				"type": "uint256"
+			},
+			{
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"name": "sender",
+				"type": "address"
 			}
 		],
+		"name": "sendCash",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -156,58 +170,18 @@
 			{
 				"name": "",
 				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
 			}
 		],
 		"payable": false,
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "",
-				"type": "address"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"name": "fillInvoice",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "newAccountOwner",
-				"type": "address"
-			},
-			{
-				"name": "newName",
-				"type": "string"
-			},
-			{
-				"name": "newProductType",
-				"type": "string"
-			},
-			{
-				"name": "newProductCount",
-				"type": "uint256"
-			}
-		],
-		"name": "registerRequest",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -234,20 +208,6 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [],
-		"name": "getOfferStatus",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"constant": false,
 		"inputs": [
 			{
@@ -265,59 +225,30 @@
 		"constant": false,
 		"inputs": [
 			{
-				"name": "value",
+				"name": "newAccountOwner",
+				"type": "address"
+			},
+			{
+				"name": "newName",
+				"type": "string"
+			},
+			{
+				"name": "newProductType",
+				"type": "string"
+			},
+			{
+				"name": "newProductCount",
 				"type": "uint256"
 			},
 			{
-				"name": "recipient",
-				"type": "address"
-			},
-			{
-				"name": "sender",
-				"type": "address"
+				"name": "newRequestLocation",
+				"type": "string"
 			}
 		],
-		"name": "sendRemittance",
+		"name": "registerRequest",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [],
-		"name": "userReceived",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getPaidStatus",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getReceivedStatus",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -355,22 +286,17 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [
 			{
-				"name": "recipient",
-				"type": "address"
+				"name": "newHash",
+				"type": "string"
 			}
 		],
-		"name": "getBalance",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
+		"name": "updateIPFSHash",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
