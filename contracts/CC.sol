@@ -191,10 +191,10 @@ contract CommunityConnect {
     /*function getPaidStatus() view public returns (bool) {
         return invoicePaid;
     }*/
-    function requestCash(uint cashAmount) public {
-        require (msg.sender == authorizedRecipient, "You are not authorized to receive cash");
+    function requestCash(address payable recipient, uint cashAmount) public {
+        require (recipient == authorizedRecipient, "You are not authorized to receive cash");
         require(cashAmount <= address(this).balance);
-        cashRecipient = msg.sender;
+        cashRecipient = recipient;
         cashRequested = cashAmount;
         cashRequestStatus = "open";
     }    
