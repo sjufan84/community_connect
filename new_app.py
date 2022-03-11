@@ -461,8 +461,8 @@ if page == 'Request for Cash Assistance':
 
             submitted = st.form_submit_button("Request for Cash Assistance")
             if submitted:
-                tx_hash = contract.functions.requestCash(amount).transact({
-                    'from': recipient,
+                tx_hash = contract.functions.requestCash(recipient, amount).transact({
+                    'from': nonprofit,
                 })
                 # Display the information on the webpage
                 receipt = w3.eth.waitForTransactionReceipt(tx_hash)
@@ -506,6 +506,7 @@ if page == 'Request for Cash Assistance':
             cashRequested = weiToUSD(cashRequested)
             st.markdown(f'**Requestor Address:**   {request[0]}')
             st.markdown(f'**Amount Requested:**   {cashRequested}')
+            st.markdown(f'**Cash request status:** {request[2]}')
             
             submitted = st.form_submit_button("Approve Cash Request")
             if submitted:
@@ -558,7 +559,7 @@ if page == 'Get Balances':
             eth = w3.fromWei(wei, "ether")
             eth_df = yf.download(tickers="ETH-USD",period="today")
             eth_usd = eth_df.iloc[0]["Close"]
-            usd_balance = int(eth_usd)*int(eth)
+            usd_balance = float(eth_usd)*float(eth)
             st.write(f"This account has a balance of **{tx_hash:,.2f} WEI:**")
 
             st.write(f"**{eth:,.2f} ETHER** or **${usd_balance:,.2f} USD**.")
@@ -604,7 +605,7 @@ if page == 'Get Balances':
         eth = w3.fromWei(wei, "ether")
         eth_df = yf.download(tickers="ETH-USD",period="today")
         eth_usd = eth_df.iloc[0]["Close"]
-        usd_balance = int(eth_usd)*int(eth)
+        usd_balance = float(eth_usd)*float(eth)
         st.write(f"This account has a balance of **{supplierBalance:,.2f} WEI:**")
         st.write(f"**{eth:,.2f} ETHER** or **${usd_balance:,.2f} USD**.")
              
