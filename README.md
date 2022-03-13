@@ -83,6 +83,10 @@ To use this dApp, First clone this repository into a folder onto your computer. 
 - Anyone can check account balances on the ``` Get Balances ``` page.
 - Anyone can verify all transactions on the ``` View Contract Ledger ``` page. 
 
+## Community Connect Preview
+
+![cc](Resources/cc_image.png)
+Here you can see the dApp and specifically the ``` Request for Cash Assistance ``` page, along with the ledger of all transactions. 
 
 ## Contributors
 
