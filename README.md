@@ -57,7 +57,7 @@ Community Connect web app requires a few installations before launching. If the 
 ## Requirements
 Create a `.env` file and include the following:
 * Specify the address that the Web3 provider will use for the local `Ganache` blockchain.
-`WEB3_PROVIDER_URI=<YOR_WEB3_PROVIDER_URI>'`
+`WEB3_PROVIDER_URI=<YOUR_WEB3_PROVIDER_URI>'`
 
 * Specify the address of the deployed contract. 
 `SMART_CONTRACT_ADDRESS='0xcF6DdE7878513412eA42bA16074De35A6c6C0317'`
