@@ -6,7 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
-import singleton_requests
+import singleton_functions
 import yfinance as yf
 import requests
 from PIL import Image
@@ -132,9 +132,9 @@ if page == 'Make a Donation':
             # st.write(dict(block_info))
 
             # calls receipt to add block
-            singleton_requests.add_block(receipt, contract_balance, block_info)
+            singleton_functions.add_block(receipt, contract_balance, block_info)
 
-            block_chain = singleton_requests.get_receipts()
+            block_chain = singleton_functions.get_receipts()
             # st.write(block_chain)
             block_chain_df = pd.DataFrame.from_dict(block_chain)
 
@@ -192,17 +192,20 @@ if page == 'Request for Goods':
                 # Displays map of requesters location for confirmation
                 requestLocation = f'{street_address} {city} {state} {zip}'
                 endpoint = "mapbox.places" 
-                response = requests.get(url=f'https://api.mapbox.com/geocoding/v5/{endpoint}/{requestLocation}.json?access_token=pk.eyJ1Ijoic2p1ZmFuODQiLCJhIjoiY2wwYnBhencyMGxuMzNrbWkwZDBnNmV5MyJ9.03YEXe8EP_0JTE125vGCmA').json()
-                latitude = response['features'][0]['center'][1]
-                longitude = response['features'][0]['center'][0]
+                try:
+                    response = requests.get(url=f'https://api.mapbox.com/geocoding/v5/{endpoint}/{requestLocation}.json?access_token=pk.eyJ1Ijoic2p1ZmFuODQiLCJhIjoiY2wwYnBhencyMGxuMzNrbWkwZDBnNmV5MyJ9.03YEXe8EP_0JTE125vGCmA').json()
+                    latitude = response['features'][0]['center'][1]
+                    longitude = response['features'][0]['center'][0]
         
-                fig = go.Figure(go.Scattermapbox(lat=[latitude], lon=[longitude], 
-                    mode='markers', marker=go.scattermapbox.Marker(size=18, symbol='car')))
+                    fig = go.Figure(go.Scattermapbox(lat=[latitude], lon=[longitude], 
+                        mode='markers', marker=go.scattermapbox.Marker(size=18, symbol='car')))
         
-                fig.update_layout(hovermode='closest', title = f'{requestLocation}', mapbox=dict(
-                    accesstoken=mapbox_access_token, bearing=0, center=go.layout.mapbox.Center(
-                    lat=latitude, lon=longitude), pitch=0, zoom=15))
-               
+                    fig.update_layout(hovermode='closest', title = f'{requestLocation}', mapbox=dict(
+                        accesstoken=mapbox_access_token, bearing=0, center=go.layout.mapbox.Center(
+                        lat=latitude, lon=longitude), pitch=0, zoom=15))
+                except Exception:
+                    pass
+                
                 tx_hash = contract.functions.registerRequest(
                     owner_address,
                     newName,
@@ -225,9 +228,9 @@ if page == 'Request for Goods':
                 # st.write(dict(block_info))
 
                 # calls receipt to add block
-                singleton_requests.add_block(receipt, contract_balance, block_info)
+                singleton_functions.add_block(receipt, contract_balance, block_info)
 
-                block_chain = singleton_requests.get_receipts()
+                block_chain = singleton_functions.get_receipts()
                 # st.write(block_chain)
                 block_chain_df = pd.DataFrame.from_dict(block_chain)
 
@@ -301,9 +304,9 @@ if page == 'Request for Goods':
                 # st.write(dict(block_info))
 
                 # calls receipt to add block
-                singleton_requests.add_block(receipt, contract_balance, block_info)
+                singleton_functions.add_block(receipt, contract_balance, block_info)
 
-                block_chain = singleton_requests.get_receipts()
+                block_chain = singleton_functions.get_receipts()
                 # st.write(block_chain)
                 block_chain_df = pd.DataFrame.from_dict(block_chain)
 
@@ -372,9 +375,9 @@ if page == 'Request for Goods':
                 # st.write(dict(block_info))
 
                 # calls receipt to add block
-                singleton_requests.add_block(receipt, contract_balance, block_info)
+                singleton_functions.add_block(receipt, contract_balance, block_info)
 
-                block_chain = singleton_requests.get_receipts()
+                block_chain = singleton_functions.get_receipts()
                 # st.write(block_chain)
                 block_chain_df = pd.DataFrame.from_dict(block_chain)
 
@@ -426,9 +429,9 @@ if page == 'Request for Goods':
                 # st.write(dict(block_info))
 
                 # calls receipt to add block
-                singleton_requests.add_block(receipt, contract_balance, block_info)
+                singleton_functions.add_block(receipt, contract_balance, block_info)
 
-                block_chain = singleton_requests.get_receipts()
+                block_chain = singleton_functions.get_receipts()
                 # st.write(block_chain)
                 block_chain_df = pd.DataFrame.from_dict(block_chain)
 
@@ -479,9 +482,9 @@ if page == 'Request for Cash Assistance':
                 # st.write(dict(block_info))
 
                 # calls receipt to add block
-                singleton_requests.add_block(receipt, contract_balance, block_info)
+                singleton_functions.add_block(receipt, contract_balance, block_info)
 
-                block_chain = singleton_requests.get_receipts()
+                block_chain = singleton_functions.get_receipts()
                 # st.write(block_chain)
                 block_chain_df = pd.DataFrame.from_dict(block_chain)
 
@@ -529,9 +532,9 @@ if page == 'Request for Cash Assistance':
                 # st.write(dict(block_info))
 
                 # calls receipt to add block
-                singleton_requests.add_block(receipt, contract_balance, block_info)
+                singleton_functions.add_block(receipt, contract_balance, block_info)
 
-                block_chain = singleton_requests.get_receipts()
+                block_chain = singleton_functions.get_receipts()
                 # st.write(block_chain)
                 block_chain_df = pd.DataFrame.from_dict(block_chain)
 
