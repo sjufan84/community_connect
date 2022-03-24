@@ -1,17 +1,20 @@
-pragma solidity ^0.5.0;
+// SPDX-License-Identifier: MIT
 
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol";
+
+pragma solidity ^0.8.1;
+
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract CommunityConnect {
     using SafeMath for uint;
     // holds the ETH address of the main customer
     // allows the account owner to receive withdrawal payments at their Ethereum address
-    address payable nonProfit = 0x6A11B707EcAE548501Ba9ab92a114C4b98378A08;
-    address payable supplier = 0x2c8e3e5EC4064612d4936970dc27e2d930f78245;
+    address nonProfit = 0x6A11B707EcAE548501Ba9ab92a114C4b98378A08;
+    address payable supplier;
     // This Ethereum address will represent a third-party account that's authorized to receive withdrawal payments.
-    address payable authorizedRecipient= 0x29f413f693525Cc5C7B9aBd8346F399641F2e852;
+    address authorizedRecipient= 0x29f413f693525Cc5C7B9aBd8346F399641F2e852;
     // holds the ETH address of the main customer
-    address payable accountOwner;
+    address requestOwner;
     // holds account balance
     uint256 public contractBalance;
     // address for approved supplier who fills the request
@@ -55,13 +58,13 @@ contract CommunityConnect {
     }*/
     
     // This function allows Users to make requests to the contract
-    function registerRequest(address payable newAccountOwner, 
+    function registerRequest(address newRequestOwner, 
         string memory newName, 
         string memory newProductType, 
         uint256 newProductCount,
         string memory newRequestLocation
         ) public {
-        accountOwner = newAccountOwner;
+        requestOwner = newRequestOwner;
         productName = newName;
         productType = newProductType;
         productCount = newProductCount;
@@ -79,7 +82,7 @@ contract CommunityConnect {
             string memory
         ) {
         return (
-            accountOwner, 
+            requestOwner, 
             productName, 
             productType, 
             productCount, 
@@ -165,8 +168,6 @@ contract CommunityConnect {
     // This function allows the Nonprofit to pay the Supplier, I think we should change this to the Nonprofit sends the money but it comes from contract 
 
     function payInvoice(uint256 invoiceNum, bool received) public payable {
-        // require(recipient == approvedSupplier, "This address is not authorized to receive compensation!");
-        // do we need this?
         require (invoiceNum == approvedInvoiceNumber, "This invoice number has not been approved");
         require(msg.sender == nonProfit, "You are not authorized to pay invoices");
         require (isApproved == true, "Fill offer has not been approved!");
@@ -213,5 +214,5 @@ contract CommunityConnect {
     }    
     
     // accepts ETH even if it gets sent without using the `deposit` function
-    function() external payable {}
+    fallback() external payable {}
 }

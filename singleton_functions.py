@@ -1,4 +1,6 @@
 import datetime
+import pandas as pd
+
 singleton = None
 
 def convert_receipt(receipt, contract_balance, block_info):
@@ -35,3 +37,31 @@ def get_receipts():
     if not singleton:
         return "There are no receipts to display."
     return singleton
+
+# Display the information on the webpage
+def update_block_chain_df(receipt, w3):
+	# st.write("Transaction receipt mined:")
+	dict_receipt = dict(receipt)
+	contract_address = dict_receipt["to"]
+
+	# Access the balance of an account using the address
+	contract_balance = w3.eth.get_balance(contract_address)
+	# st.write(contract_balance)
+
+	# Access information for the most recent block
+	block_info = w3.eth.get_block("latest")
+	# st.write(dict(block_info))
+
+	# calls receipt to add block
+	add_block(receipt, contract_balance, block_info)
+
+	block_chain = get_receipts()
+	# st.write(block_chain)
+	block_chain_df = pd.DataFrame.from_dict(block_chain)
+
+	columns = ['Contract Balance', "Tx Hash", "From", "To", "Gas", "Timestamp"]
+	block_chain_df.columns = columns
+	block_chain_df.set_index('Tx Hash', inplace=True)
+	block_chain_df['Contract Balance'] = block_chain_df['Contract Balance'].astype('str')
+
+	return block_chain_df

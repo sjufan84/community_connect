@@ -1,0 +1,641 @@
+[
+	{
+		"inputs": [
+			{
+				"internalType": "address payable",
+				"name": "_newRecipient",
+				"type": "address"
+			}
+		],
+		"name": "addAuthorizedCashRecipient",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_fillOfferNumber",
+				"type": "uint256"
+			}
+		],
+		"name": "approveFillOffer",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "donation",
+				"type": "uint256"
+			}
+		],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_cashRequestAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address payable",
+				"name": "_recipient",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_recipientId",
+				"type": "uint256"
+			}
+		],
+		"name": "newCashRequest",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_supplyRequestNumber",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address payable",
+				"name": "newSupplier",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_compensationRequested",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "newSupplierLocation",
+				"type": "string"
+			}
+		],
+		"name": "offerFill",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_invoiceNum",
+				"type": "uint256"
+			}
+		],
+		"name": "payInvoice",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newRequestOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "newName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "newProductType",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newProductCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "newRequestLocation",
+				"type": "string"
+			}
+		],
+		"name": "registerRequest",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_cashRequestAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address payable",
+				"name": "_recipient",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_cashRequestId",
+				"type": "uint256"
+			}
+		],
+		"name": "sendCash",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "newHash",
+				"type": "string"
+			}
+		],
+		"name": "updateIPFSHash",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "CashRequests",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "cashRequestSender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "cashRequestAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "cashRequestStatus",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "isApproved",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "isPaid",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "cashRequestId",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "contractBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "FillOffers",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "offerSupplier",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "supplierLocation",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "compensationRequested",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "compensationApproved",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "supplyRequestNumber",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isApproved",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getIPFSHash",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "Invoices",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "invoiceNumber",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "compensationRequested",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "compensationApproved",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address payable",
+				"name": "supplier",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "isPaid",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "SuppliesRequests",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "supplyRequestOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "productName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "productType",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "productCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "requestLocation",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "requestStatus",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "supplyRequestId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isOffer",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "isFilled",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_cashRecipientId",
+				"type": "uint256"
+			}
+		],
+		"name": "viewAuthorizedCashRecipients",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_cashRequestId",
+				"type": "uint256"
+			}
+		],
+		"name": "viewCashRequests",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_supplyRequestNumber",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_fillOfferNumber",
+				"type": "uint256"
+			}
+		],
+		"name": "viewFillOffers",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_invoiceNum",
+				"type": "uint256"
+			}
+		],
+		"name": "viewInvoice",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_supplyRequestNumber",
+				"type": "uint256"
+			}
+		],
+		"name": "viewRequest",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "viewRequests",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "supplyRequestOwner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "productName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "productType",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "productCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "requestLocation",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "requestStatus",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "supplyRequestId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isOffer",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "isFilled",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct CommunityConnect.suppliesRequest[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
