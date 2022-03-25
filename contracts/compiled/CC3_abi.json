@@ -1,0 +1,930 @@
+[
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "role",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "previousAdminRole",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "newAdminRole",
+				"type": "bytes32"
+			}
+		],
+		"name": "RoleAdminChanged",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "role",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			}
+		],
+		"name": "RoleGranted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "role",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			}
+		],
+		"name": "RoleRevoked",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_patientName",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_patientLocation",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "_doesConsent",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_deliveryReason",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "_isQuarantined",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "_needsDelivery",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_preferredLanguage",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_patientPhoneNumber",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_patientNeighborhood",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_organizationMember",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_patientAge",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "patientId",
+				"type": "uint256"
+			}
+		],
+		"name": "logNewPatient",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_providerWallet",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_providerIndex",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_providerEmail",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_providerName",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_clinic",
+				"type": "string"
+			}
+		],
+		"name": "logNewProvider",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "_patientId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "requestId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address payable",
+				"name": "_providerWallet",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_requestIPFS",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_requestListIPFS",
+				"type": "string"
+			}
+		],
+		"name": "logNewRequest",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_patientName",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_patientLocation",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "_doesConsent",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_deliveryReason",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "_isQuarantined",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "_needsDelivery",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_preferredLanguage",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_patientPhoneNumber",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_patientNeighborhood",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_organizationMember",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_patientAge",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "patientId",
+				"type": "uint256"
+			}
+		],
+		"name": "updatePatient",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_providerWallet",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_providerIndex",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "providerEmail",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_providerName",
+				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "string",
+				"name": "_clinic",
+				"type": "string"
+			}
+		],
+		"name": "updateProvider",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "DEFAULT_ADMIN_ROLE",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "MANAGER_ROLE",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "NEW_PROVIDER_ROLE",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "OWNER_ROLE",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "PATIENT_ROLE",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "PROVIDER_ROLE",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "_patients",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "_needsDelivery",
+				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "_patientLocation",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "_doesConsent",
+				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "_deliveryReason",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "_isQuarantined",
+				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "_preferredLanguage",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_patientName",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_patientAge",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_patientPhoneNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_patientNeighborhood",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_organizationMember",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_patientId",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "_providers",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "providerName",
+				"type": "string"
+			},
+			{
+				"internalType": "address payable",
+				"name": "providerWallet",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "clinic",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "providerEmail",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "providerIndex",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "_requests",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "_providerWallet",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_patientId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_requestId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_requestIPFS",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_patientLocation",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_patientName",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "_doesConsent",
+				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "_deliveryReason",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "_isQuarantined",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "_needsDelivery",
+				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "_preferredLanguage",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_patientPhoneNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_patientNeighborhood",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_organizationMember",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_patientAge",
+				"type": "uint256"
+			}
+		],
+		"name": "addPatient",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_providerName",
+				"type": "string"
+			},
+			{
+				"internalType": "address payable",
+				"name": "_providerWallet",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_clinic",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_providerEmail",
+				"type": "string"
+			}
+		],
+		"name": "addProvider",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getRequestCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "role",
+				"type": "bytes32"
+			}
+		],
+		"name": "getRoleAdmin",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "i",
+				"type": "uint256"
+			}
+		],
+		"name": "getSinglePatient",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "bool",
+						"name": "_needsDelivery",
+						"type": "bool"
+					},
+					{
+						"internalType": "string",
+						"name": "_patientLocation",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "_doesConsent",
+						"type": "bool"
+					},
+					{
+						"internalType": "string",
+						"name": "_deliveryReason",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "_isQuarantined",
+						"type": "bool"
+					},
+					{
+						"internalType": "string",
+						"name": "_preferredLanguage",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_patientName",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_patientAge",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "_patientPhoneNumber",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_patientNeighborhood",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_organizationMember",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_patientId",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct CommunityConnect.Patient",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "role",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "grantRole",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "role",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "hasRole",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_providerWallet",
+				"type": "address"
+			}
+		],
+		"name": "isProvider",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "_isProvider",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address payable",
+				"name": "_providerWallet",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_patientId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_requestIPFS",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_requestListIPFS",
+				"type": "string"
+			}
+		],
+		"name": "newRequest",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "role",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "renounceRole",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "role",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "revokeRole",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes4",
+				"name": "interfaceId",
+				"type": "bytes4"
+			}
+		],
+		"name": "supportsInterface",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
