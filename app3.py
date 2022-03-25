@@ -1,5 +1,7 @@
 import os
 import json
+from ssl import SSL_ERROR_SSL
+from telnetlib import PRAGMA_HEARTBEAT
 from tkinter import N
 from turtle import onclick
 from numpy import true_divide
@@ -15,6 +17,8 @@ from PIL import Image
 import plotly.graph_objects as go
 import datetime as dt
 import pytz
+import asyncio
+
 
 from ipfs import updateIPFS_df, retrieve_block_df
 
@@ -25,6 +29,7 @@ mapbox_access_token = os.getenv("MAPBOX_ACCESS_TOKEN")
 
 #  Define and connect a new web3 provider
 w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
+node_provider = os.getenv('NODE_PROVIDER_LOCAL')
 
 # Once contract instance is loaded, build the Streamlit components and logic for interacting with the smart contract from the webpage
 # Allow users to give pieces of information.  1-Select an account for the contract owner from a list of accounts.  2-Amount to donate
@@ -64,6 +69,31 @@ supplier_key = os.getenv("SUPPLIER_PRIVATE_KEY")
 nonprofit_key = os.getenv('NONPROFIT_PRIVATE_KEY')
 donor = accounts[0]
 
+requests_df = pd.DataFrame(index=["Request Id"], columns = ["Patient Name",
+                "PatientLocation",
+                "Patient Neighborhood",
+                "Preferred Language", 
+                "Needs Delivery",
+                "Phone Number", 
+                "Is quarantined",
+                "Patient Id",
+                "Provider",
+                "Food Item Type",
+                "Prep Considerations",
+                "Baby Items",
+                "Clothes Sizes",
+                "Personal Care Type", 
+                "# of Adults", 
+                "# of Children", 
+                "Age and Gender of Children", 
+                "Diaper Sizes",
+                "Sleep Surface",
+                "Other Special Items",
+                "Other Notess",
+                "Date Submitted"])
+                
+
+
 patient_filter = contract.events.logNewPatient.createFilter(fromBlock='latest')
 request_filter = contract.events.logNewRequest.createFilter(fromBlock='latest')
 
@@ -87,36 +117,29 @@ def weiToUSD(wei):
     
     return USD
 
-#Establishing our dataframes to store our ledger
-block_chain_df = pd.DataFrame()
-new_df = pd.DataFrame()
-
-
 
 
 def main():
+
     if "page" not in st.session_state:
-        # Initialize session state.
-        st.session_state.update({
-            # Default page.
-            "page": "home",
-
-            # Default patient id
-            "patientId" : 0
-        })
-
+      st.session_state.page = 'Home'
+         
+    if "requestPageStatus" not in st.session_state:
+        st.session_state.requestPageStatus = "makeRequest"
+    
+    if 'patientId' not in st.session_state:
+        st.session_state.patientId = 99999
+    st.sidebar.title("Community Connect App")
     st.sidebar.subheader("How Can We Help?")
     page = st.sidebar.radio('', options=tuple(PAGES.keys()))
+    st.session_state.page = page
     st.sidebar.markdown("""---""")
     
     PAGES[page]()
 
-
-
-
 def page_home(): #st.header("""This is a decentralized application that facilitates an ecosystem of donors, non-profits, and end users in the distribution of aid""")
-    st.sidebar.title("Community Connect App")
     #st.image('Resources/CommunityConnect_image.png', use_column_width='auto')
+    st.write('Placeholder')
 
     
 
@@ -189,13 +212,17 @@ def page_addPatient():
             # Display the information on the webpage
             receipt = st.write(w3.eth.waitForTransactionReceipt(tx_hash))
             st.write(receipt)
-            event = patient_filter.get_new_entries()
+    if st.session_state.page == 'Make Request':
+        backToRequest = st.button("Back to Make Requests")
+        if backToRequest:
+            st.session_state.requestPageStatus = 'makeRequest'
+            st.experimental_rerun()
+            '''event = patient_filter.get_new_entries()
             eventDict = dict(event[0]['args'])
             patientName = eventDict['_patientName']
             patientId = eventDict['patientId']
             st.markdown(f"Thank you!  Your addition of **{patientName}** has been accepted.  Their **CommunityConnect Id Number is {patientId}.**  Please keep this for your records and give it to them as they will need to reference it in the future.  You can also use it to submit requests on their behalf and to update or reference their information in the system.")
-            #your location below:**")
-
+            #your location below:**")'''
             
             #block_chain_df = singleton_functions.update_block_chain_df(receipt, w3)
             #new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
@@ -206,52 +233,76 @@ def page_addPatient():
 def page_updatePatient():
     st.header('Update Patient Info')
 
+def page_viewPatients():
+    st.header('View patients -- @TODO be able to filter by provider, filter out those who do not consent to share their info... set up different permissions based on roles')
+
 def page_addProvider():
     st.header('New Provider')
 
 def page_newRequest():
-    st.header('New Request')
+    st.session_state.page = "Make Request"
+    if st.session_state.requestPageStatus == "makeRequest":
 
-    st.subheader('Please fill out request details below')
-    st.markdown('**If the patient you are requesting for has not been registered in the system, please click below to register them before submitting a goods request.**')
-    addPatient = st.button('Add New Patient')
-    if addPatient:
-        page_addPatient()
-    patientId = st.number_input('Enter Patient Id for Request', value=0)
-    submitPatient = st.button('Lookup Patient Id')
-    if submitPatient:
-        patientInfo = contract.functions._patients(patientId).call()
-    
-        col1, col2 = st.columns(2)
+        st.header('New Request')
 
-        with col1:
-            patientName = f'{patientInfo[6]}'
-            st.markdown(f'**Patient Name:**  {patientName}')
-            patientLocation = f'{patientInfo[1]}'
-            st.markdown(f'**Patient Location:**  {patientLocation}')
-            patientNeighborhood = f'{patientInfo[9]}'
-            st.markdown(f'**Patient Neighborhood:**  {patientNeighborhood}')
-            preferredLanguage = f'{patientInfo[5]}'
-            st.markdown(f"**Patient's preferred language is:**  {preferredLanguage}")
-        with col2:
-            needsDelivery = {patientInfo[0]} 
-            st.markdown(f'**Patient Needs Delivery:**  {needsDelivery}')
-            patientPhoneNumber = f'{patientInfo[8]}'
-            st.markdown(f'**Patient Phone #:**  {patientPhoneNumber}')
-            is_quarintined = f'{patientInfo[4]}'
-            st.markdown(f'**Patient is quarintined?**  {is_quarintined}')
+        st.subheader('Please fill out request details below')
+
+
+        st.markdown('**If the patient you are requesting for has not been registered in the system, please click below to register them before submitting a goods request.**')
+        amendPatient = st.button('Add New Patient')
+        if amendPatient:
+            st.session_state.requestPageStatus = "addPatient"
+            st.experimental_rerun()
+
+        st.session_state.patientId = st.number_input('Enter Patient Id for Request', value=0)
+        patientLookup = st.button("Submit patient lookup")
+        if patientLookup:
+            st.session_state.patientId = st.session_state.patientId
+
+                #block_chain_df = singleton_functions.update_block_chain_df(receipt, w3)
+                #new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
+                
+                #st.write(f'{requestLocation}')
+                #st.write(block_chain_df)
         
         
-        st.markdown('**If any of the above information is incorrect and needs to be updated, please click below to update patient information, otherwise continue the request below:**')
-        updateInfo = st.button("Update Patient Information")
-        if updateInfo:
-            st.session_state.patientId = patientId
-            page_updatePatient()
-
         with st.form("submitRequest", clear_on_submit=True):
+
+            patientInfo = contract.functions._patients(st.session_state.patientId).call()
+            patientName = f'{patientInfo[6]}'
+            if patientName == '':
+                    st.write("This Patient either does not exist or their name was not inputted correctly... please try a different patient id")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                
+                
+                st.markdown(f'**Patient Name:**  {patientName}')
+                patientLocation = f'{patientInfo[1]}'
+                st.markdown(f'**Patient Location:**  {patientLocation}')
+                patientNeighborhood = f'{patientInfo[9]}'
+                st.markdown(f'**Patient Neighborhood:**  {patientNeighborhood}')
+                preferredLanguage = f'{patientInfo[5]}'
+                st.markdown(f"**Patient's preferred language is:**  {preferredLanguage}")
+            with col2:
+                needsDelivery = f'{patientInfo[0]}' 
+                st.markdown(f'**Patient Needs Delivery:**  {needsDelivery}')
+                patientPhoneNumber = f'{patientInfo[8]}'
+                st.markdown(f'**Patient Phone #:**  {patientPhoneNumber}')
+                is_quarintined = f'{patientInfo[4]}'
+                st.markdown(f'**Patient is quarintined?**  {is_quarintined}')
+
+            st.markdown("""---""")
+
+            st.markdown('**If any of the above information is incorrect and needs to be updated, please click below to update patient information by selecting "Update Patient Information" on the left sidebar, otherwise continue the request below:**')
+            #updateInfo = st.button("Update Patient Information", key='updateInfo')
+
+            st.markdown("""---""")
+
             currentTime = dt.datetime.now(pytz.timezone('US/Pacific')).strftime('%Y-%m-%d')
 
-            providerWallet = st.selectbox('Provider, please select your address here', options=[accounts[0]])
+            providerWallet = accounts[0]
 
             # Taking in requesters location to be mapped
             col1, col2 = st.columns(2)
@@ -265,7 +316,7 @@ def page_newRequest():
                 numChildren =  st.number_input('How many CHILDREN live in the household? (this will help us pack appropriate amount of items)', value=0)
                 ageGenderChildren = st.text_area('Please list the age(s) and gender of the children in the household')
                 otherPatientNotes = st.text_area('Anything else you would like us to know about this patient?')
-               
+                
 
             with col2:
                 personalCareType = st.multiselect('What personal care item[s] does the patient need? (Hygiene Products)', options = [
@@ -284,118 +335,115 @@ def page_newRequest():
                 sleepSurface = st.multiselect('What type of sleep surface does your patient need for their infant? Or any other special item[s]',
                     options = ['Breastfeeding Pillow', 'Other'])
                 otherSpecialItems = st.text_input('If other, please specify', key='other2')
-               
+
+            
             submitted = st.form_submit_button('submitRequest')
             if submitted:
-                st.write('submitted')
-                tx_hash = contract.functions.addPatient(
-                patientName,
-                patientLocation,
-                needsDelivery,
-                preferredLanguage,
-                patientPhoneNumber,
-                patientNeighborhood,
-                patientId,
-                providerWallet,
-                foodItemType,
-                prepConsiderations,
-                babyItems,
-                clothesSizes,
-                personalCareType,
-                numAdults,
-                numChildren,
-                sizeDiapers,
-                sleepSurface,
-                otherSpecialItems,
-                otherPatientNotes,
-                currentTime,
-                ageGenderChildren
-            ).transact({'from' : providerWallet})
+                requestIPFS = 'ttest'
+                requestListIPFS = 'TEST'
+                tx_hash = contract.functions.newRequest(
+                    providerWallet,
+                    st.session_state.patientId,
+                    requestIPFS,
+                    requestListIPFS
+                ).transact({'from' : providerWallet})
                 # Display the information on the webpage
+                
                 receipt = st.write(w3.eth.waitForTransactionReceipt(tx_hash))
                 st.write(receipt)
                 event = request_filter.get_new_entries()
                 eventDict = dict(event[0]['args'])
-                patientName = eventDict['_patientName']
-                patientId = eventDict['patientId']
-                st.markdown(f"Thank you!  Your addition of **{patientName}** has been accepted.  Their **CommunityConnect Id Number is {patientId}.**  Please keep this for your records and give it to them as they will need to reference it in the future.  You can also use it to submit requests on their behalf and to update or reference their information in the system.")
-                #your location below:**")
+                requestId = eventDict['requestId']
+                st.markdown(f"Thank you!  Your addition of request **{requestId}** has been accepted.")
+                try:
+                    requests_df = pd.read_csv(Path('requests.csv'), index_col = [0]).astype(str)
+                except Exception:
+                    requests_df = pd.DataFrame()
+                #requestId = contract.functions.getRequestCount.call()
+                st.write(requestId)
+                thisRequests_df = pd.DataFrame(index = [requestId], columns = ["Patient Name",
+                "PatientLocation",
+                "Patient Neighborhood",
+                "Preferred Language", 
+                "Needs Delivery",
+                "Phone Number", 
+                "Is quarantined",
+                "Patient Id",
+                "Provider",
+                "Food Item Type",
+                "Prep Considerations",
+                "Baby Items",
+                "Clothes Sizes",
+                "Personal Care Type", 
+                "# of Adults", 
+                "# of Children", 
+                "Age and Gender of Children", 
+                "Diaper Sizes",
+                "Sleep Surface",
+                "Other Special Items",
+                "Other Notess",
+                "Date Submitted"]).astype(str)
 
-            
-            #block_chain_df = singleton_functions.update_block_chain_df(receipt, w3)
-            #new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
-            
-            #st.write(f'{requestLocation}')
-            #st.write(block_chain_df)
+                thisRequests_df.loc[requestId] = {
+                "Patient Name" : patientName,
+                "PatientLocation" : patientLocation,
+                "Patient Neighborhood" : patientNeighborhood,
+                "Preferred Language" : preferredLanguage,
+                "Needs Delivery" : needsDelivery,
+                "Phone Number" : patientPhoneNumber,
+                "Is quarantined" : is_quarintined,
+                "Patient Id" : st.session_state.patientId,
+                "Provider" : providerWallet,
+                "Food Item Type" : foodItemType,
+                "Prep Considerations" : prepConsiderations,
+                "Baby Items" : babyItems,
+                "Clothes Sizes" : clothesSizes,
+                "Personal Care Type" : personalCareType,
+                "# of Adults" : numAdults,
+                "# of Children" : numChildren,
+                "Diaper Sizes" : sizeDiapers,
+                "Sleep Surface" : sleepSurface,
+                "Other Special Items" : otherSpecialItems,
+                "Other Notes" : otherPatientNotes,
+                "Date Submitted" : currentTime,
+                "ageGenderChildren" : ageGenderChildren
+                }
+                thisRequests_df = thisRequests_df.astype(str)
+                requests_df = pd.concat([requests_df, thisRequests_df]).astype(str).dropna()
+                requests_df.to_csv(Path('requests.csv'))
+                st.write(requests_df)
+                
+                
+                
+                
+                
 
-
-        '''col1, col2 = st.columns(2)
-        with col1:
-            newName = st.text_input('What is the name of the product?')
-            newProductType = st.selectbox('Select type of assistance requested', options = ['Food', 'Supplies'])
+    elif st.session_state.requestPageStatus == 'addPatient':
+        page_addPatient()
+    
         
-        # Input quantity of items requested if food or supplies, else ride quantity defaults to 1
-        with col2:
-            owner_address = st.selectbox('Select your wallet address to submit request form', options = accounts[5:10])
-            newProductCount = st.number_input('Enter product quantity requested', value=1)
-            
-        submitted = st.form_submit_button("Register Request")
-        if submitted:
 
-            # Displays map of requesters location for confirmation
-            requestLocation = f'{street_address} {city} {state} {zip}'
-            endpoint = "mapbox.places" 
-            try:
-                response = requests.get(url=f'https://api.mapbox.com/geocoding/v5/{endpoint}/{requestLocation}.json?access_token={mapbox_access_token}').json()
-                latitude = response['features'][0]['center'][1]
-                longitude = response['features'][0]['center'][0]
 
-                fig = go.Figure(go.Scattermapbox(lat=[latitude], lon=[longitude], 
-                    mode='markers', marker=go.scattermapbox.Marker(size=18, symbol='car')))
-
-                fig.update_layout(hovermode='closest', title = f'{requestLocation}', mapbox=dict(
-                    accesstoken=mapbox_access_token, bearing=0, center=go.layout.mapbox.Center(
-                    lat=latitude, lon=longitude), pitch=0, zoom=15))
-            
-            except Exception:
-                fig = ''
-                pass
-            
-            tx_hash = contract.functions.registerRequest(
-                owner_address,
-                newName,
-                newProductType,
-                int(newProductCount),
-                requestLocation
-            ).transact({'from' : owner_address})
-            # Display the information on the webpage
-            receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-            
-            block_chain_df = singleton_functions.update_block_chain_df(receipt, w3)
-            new_df = updateIPFS_df(contract, block_chain_df, nonprofit)
-
-            st.markdown("**Thank you!  Your request is pending supplier confirmation!  Please confirm\
-            your location below:**")
-            #st.write(f'{requestLocation}')
-            if fig != '':
-                st.plotly_chart(fig, title=f'{requestLocation}')
-            else:
-                st.markdown(f'{requestLocation}')
-
-            st.markdown('**Transaction Hash:**')
-            st.write(block_chain_df)'''
-
+        
 
 def page_viewRequests():
     st.header('View Requests')
+
+    
+
+#Establishing our dataframes to store our ledger
+block_chain_df = pd.DataFrame()
+new_df = pd.DataFrame()
+
 
 PAGES = {
     "Home" : page_home,
     "Add Patient": page_addPatient,
     "Update Patient": page_updatePatient,
+    "View Patients": page_viewPatients,
     "Make Request": page_newRequest,
     "View Open Requests": page_viewRequests,
-    "New Provider": page_addProvider
+    "New Provider": page_addProvider,
 }
 
 if __name__ == "__main__":
