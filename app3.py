@@ -438,6 +438,7 @@ new_df = pd.DataFrame()
 
 PAGES = {
     "Home" : page_home,
+    "Make Donation" : page_donation,
     "Add Patient": page_addPatient,
     "Update Patient": page_updatePatient,
     "View Patients": page_viewPatients,
